@@ -5,11 +5,14 @@
 
 #define YES 1
 #define NO 0
-#define nil 0
+#define nil ((void*)0)
 
-#define MMNotFound  ((size_t)-1) 
+#define MMNotFound  (UINT_MAX-1) //32 bit 
+/* Use a project-local boolean type to avoid conflicting with Windows' BOOL (which is an int).
+    Prefer migrating code to use `MMBool` to avoid ABI conflicts with WinAPI. */
 
-typedef unsigned char BOOL;
+typedef unsigned char MMBool;
+
 typedef unsigned long MMUInteger;
 typedef long MMInteger;
 

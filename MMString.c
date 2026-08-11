@@ -3,7 +3,6 @@
 #include <string.h>
 #include <stdio.h>
 #include "MMTypes.h"
-#include <stdbool.h>
 #include <errno.h>
 #include <limits.h>
 
@@ -74,27 +73,14 @@ MMString *MMString_initWithFormat(const char *format, ...) {
     return newStr;
 }
 
-//C function to build a path from a directory and a filename
-MMString *MMString_build_path(const MMString *dir, const MMString *filename) {
-    if (!dir || !filename) return nil;
-
-    int need_sep = (dir->length > 0 && dir->cstring[dir->length - 1] != '/');
-
-    size_t total = dir->length + need_sep + filename->length + 1;
-    char path[total];
-
-    if (need_sep)
-        snprintf(path, total, "%s/%s", dir->cstring, filename->cstring);
-    else
-        snprintf(path, total, "%s%s", dir->cstring, filename->cstring);
-
-    return MMString_initWithCString(path);
-}
-
 MMString *MMString_stringByDeletingLastPathComponent(const MMString *path){
     if (!path || !path->cstring) return nil;
 
+#if defined(_WIN32) || defined(_WIN64)
+    char *lastSlash = strrchr(path->cstring, '\\');
+#else
     char *lastSlash = strrchr(path->cstring, '/');
+#endif
     if (!lastSlash) {
         // No slash found, return an empty string
         MMString *newStr = MMString_init(0);
@@ -123,7 +109,25 @@ MMString *MMString_stringByAppendingString(const MMString *base, const MMString 
 
 }
 
-BOOL MMString_writeToFile(const MMString *str, const MMString *path, BOOL atomically) {
+MMString * MMString_stringByAppendingPathComponent(MMString * base, MMString *str){
+     if (!base || !str) return nil;
+
+    size_t newLength = base->length + str->length + 1; //+ 1 for separator
+    MMString *newStr = MMString_init(newLength);
+    if (!newStr) return nil;
+
+    strcpy(newStr->cstring, base->cstring);
+#if defined(_WIN32) || defined(_WIN64)
+    strcat(newStr->cstring, "\\");
+#else
+    strcat(newStr->cstring, "/");
+#endif 
+    strcat(newStr->cstring, str->cstring);
+    return newStr;
+}
+
+
+MMBool MMString_writeToFile(const MMString *str, const MMString *path, MMBool atomically) {
     if (!str || !path || !str->cstring || !path->cstring) {
         return NO;
     }
@@ -274,7 +278,7 @@ MMUInteger MMString_hash(MMString *str){
     return h;
 }
 
-BOOL MMString_isEqualToString(MMString *str, MMString * aString){
+MMBool MMString_isEqualToString(MMString *str, MMString * aString){
     if (!str || !aString || !(str->cstring) || !(aString->cstring) || str->length!=aString->length)
     {
         return NO;

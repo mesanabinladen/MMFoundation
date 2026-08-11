@@ -16,17 +16,16 @@ MMString *MMString_initWithFormat(const char *format, ...);
 /* Return the C string */
 const char *MMString_cString(const MMString *str);
 
-/* Build a path from a directory and a filename */
-MMString *MMString_build_path(const MMString *dir, const MMString *filename);
-
 /* Return a new MMString with the last path component removed  */
 MMString *MMString_stringByDeletingLastPathComponent(const MMString *path);
 
 /* Return a new MMString with a string appended */
 MMString *MMString_stringByAppendingString(const MMString *base, const MMString *append);
 
+MMString * MMString_stringByAppendingPathComponent(MMString * base, MMString *str);
+
 /* Write the contents of an MMString to a file */
-BOOL MMString_writeToFile(const MMString *str, const MMString *path, BOOL atomically);
+MMBool MMString_writeToFile(const MMString *str, const MMString *path, MMBool atomically);
 
 MMString * MMString_stringWithContentsOfFile(MMString * path, MMStringEncoding enc, MMError *error);
 
@@ -38,7 +37,7 @@ MMRange MMString_rangeOfString(MMString *str, MMString *searchString);
 
 MMUInteger MMString_hash(MMString *str);
 
-BOOL MMString_isEqualToString(MMString *str, MMString * aString);
+MMBool MMString_isEqualToString(MMString *str, MMString * aString);
 
 MMUInteger MSString_lengthOfBytesUsingEncoding(MMString *str, MMStringEncoding enc);
 

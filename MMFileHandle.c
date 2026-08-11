@@ -4,6 +4,12 @@
 #include <stdlib.h>
 #include <string.h>
 
+#if defined(_WIN32) || defined(_WIN64)
+#include <io.h>
+#else
+#include <unistd.h>
+#endif
+
 //private function to create a file if it doesn't exist
 MMFileHandle *getFileHandle(const MMString *path, int flags, int mode) {
      if (!path || !path->cstring) return NULL;
@@ -88,7 +94,11 @@ off_t MMFileHandle_offsetInFile(MMFileHandle *handle) {
 
 void MMFileHandle_synchronizeFile(MMFileHandle *handle) {
     if (handle) {
+#if defined(_WIN32) || defined(_WIN64)
+        _commit(handle->fd);
+#else
         fsync(handle->fd);
+#endif
     }
 }
 
