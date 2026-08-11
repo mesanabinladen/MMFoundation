@@ -17,3 +17,7 @@ In short, this library is an experiment in creating a lightweight, portable Foun
 For now, only the classes and methods strictly necessary for my own projects have been implemented. I am working on some more classes and methods, but anyone who wants to contribute, improve, or extend the library is more than welcome to do so.
 
 The project license is described in the License file.
+
+## Documentation
+
+There's a small dedicated HOWTO for the MMFoundation utilities: [HOWTO.md](HOWTO.md). 
