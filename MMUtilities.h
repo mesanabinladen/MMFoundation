@@ -5,6 +5,6 @@
 
 MMRange MMMakeRange(MMUInteger loc, MMUInteger len);
 
-
+void MM_release(void* anObject);
 
 #endif /* MMUTILITIES_H */

@@ -1,66 +1,105 @@
-#include "MMArray.h"
 #include <stdlib.h>
 #include <stdarg.h>
 #include <string.h>
+#include <stdio.h>
 
-static int MMArray_ensure_capacity(MMArray *arr, size_t minCapacity) {
-    if (arr->capacity >= minCapacity) return 0;
-    size_t newCap = arr->capacity ? arr->capacity * 2 : 4;
-    while (newCap < minCapacity) newCap *= 2;
-    void **newItems = (void**)realloc(arr->items, newCap * sizeof(void*));
-    if (!newItems) return -1;
-    arr->items = newItems;
-    arr->capacity = newCap;
-    return 0;
+#include "MMArray.h"
+#include "MMData.h"
+#include "MMDate.h"
+#include "MMFileHandle.h"
+#include "MMString.h"
+#include "MMUtilities.h"
+
+MMArray *_initWithObjectsVaList(void *first, va_list ap) {
+
+    va_list copy;
+    va_copy(copy, ap);
+
+    // count arguments first
+    void *obj = first;
+    int numObj = 0;
+    while (obj) {
+        numObj++;
+        obj = va_arg(copy, void*);
+    }
+    va_end(copy);
+
+    MMMutableArray *arr = MMMutableArray_initWithCapacity(numObj);
+    if (!arr) return nil;
+
+    va_copy(copy, ap);
+    obj = first;
+    numObj = 0;
+    while (obj) {
+        ObjectType * ptr = (ObjectType *)obj;
+        ptr->retainCount++;
+        arr->items[numObj] = obj;
+        numObj++;
+        obj = va_arg(copy, void*);
+    }
+    va_end(copy);
+    arr->count = numObj;
+
+    return (MMArray *)arr;
+}
+
+MMArray *_initWithCStringsVaList(void *first, va_list ap) {
+
+    va_list copy;
+    va_copy(copy, ap);
+
+    // count arguments first
+    void *obj = first;
+    int numObj = 0;
+    while (obj) {
+        numObj++;
+        obj = va_arg(copy, void*);
+    }
+    va_end(copy);
+
+    MMMutableArray *arr = MMMutableArray_initWithCapacity(numObj);
+    if (!arr) return nil;
+
+    va_copy(copy, ap);
+    obj = first;
+    numObj = 0;
+    while (obj) {
+        MMString * str = MMString_initWithCString(obj);
+        arr->items[numObj] = str;
+        //I won't increase retain count beacuse it's already 1
+        numObj++;
+        obj = va_arg(copy, void*);
+    }
+    va_end(copy);
+    arr->count = numObj;
+
+    return (MMArray *)arr;
 }
 
 /*Create an empty MMArray */
 MMArray *MMArray_init(void){
     MMArray *arr = (MMArray*)malloc(sizeof(MMArray));
-    if (!arr) return NULL;
-    arr->items = NULL;
+    if (!arr) return nil;
+    arr->type = MMTypeArray;
+    arr->retainCount = 1;
+    arr->items = nil;
     arr->count = 0;
-    arr->capacity = 0;
     return arr;
 }
 
 MMArray *MMArray_initWithObjects(void *first, ...) {
-    MMArray *arr = (MMArray*)malloc(sizeof(MMArray));
-    if (!arr) return NULL;
-    arr->items = NULL;
-    arr->count = 0;
-    arr->capacity = 0;
-
     va_list ap;
     va_start(ap, first);
-    void *obj = first;
-    while (obj) {
-        if (MMArray_ensure_capacity(arr, arr->count + 1) != 0) {
-            va_end(ap);
-            MMArray_release(arr);
-            return NULL;
-        }
-        arr->items[arr->count++] = obj;
-        obj = va_arg(ap, void*);
-    }
+    MMArray *arr = _initWithObjectsVaList(first, ap);
     va_end(ap);
     return arr;
 }
 
-MMArray *MMArray_initWithObjectsArray(void **objects, size_t count) {
-    MMArray *arr = (MMArray*)malloc(sizeof(MMArray));
-    if (!arr) return NULL;
-    arr->items = NULL;
-    arr->count = 0;
-    arr->capacity = 0;
-    if (count > 0) {
-        if (MMArray_ensure_capacity(arr, count) != 0) {
-            free(arr);
-            return NULL;
-        }
-        memcpy(arr->items, objects, count * sizeof(void*));
-        arr->count = count;
-    }
+MMArray *MMArray_initWithCStringsArray(void *first, ...) {
+    va_list ap;
+    va_start(ap, first);
+    MMArray *arr = _initWithCStringsVaList(first, ap);
+    va_end(ap);
     return arr;
 }
 
@@ -69,14 +108,86 @@ size_t MMArray_count(const MMArray *arr) {
 }
 
 void *MMArray_objectAtIndex(const MMArray *arr, size_t index) {
-    if (!arr) return NULL;
-    if (index >= arr->count) return NULL;
+    if (!arr) return nil;
+    if (index >= arr->count) return nil;
     return arr->items[index];
 }
 
 //release
 void MMArray_release(MMArray *arr) {
     if (!arr) return;
+
+    for (int i=0; i<arr->count;i++)
+    {   
+        if (arr->items[i]) {
+            MM_release(arr->items[i]);
+            arr->items[i] = nil;
+        }
+    }
     free(arr->items);
     free(arr);
+    arr = nil;
 }
+
+/*Create an empty MMMutableArray */
+MMMutableArray *MMMutableArray_init(void){
+    return (MMMutableArray *) MMArray_init();
+}
+
+MMMutableArray *MMMutableArray_initWithCapacity(size_t length){
+    MMMutableArray *arr = (MMMutableArray*)malloc(sizeof(MMMutableArray));
+    if (!arr) return nil;
+
+    arr->items = malloc(length*sizeof(void *));
+    if (!arr->items ) {
+        return nil;
+    }
+    arr->type = MMTypeArray;
+    arr->retainCount = 1;
+    arr->capacity = length;
+    arr->count = 0;
+    return arr;
+}
+
+MMMutableArray *MMMutableArray_initWithObjects(void *first, ...) {
+    va_list ap;
+    va_start(ap, first);
+    MMArray *arr = _initWithObjectsVaList(first, ap);
+    va_end(ap);
+    return (MMMutableArray *)arr;
+}
+
+MMMutableArray *MMMutableArray_initWithCStringsArray(void *first, ...) {
+    va_list ap;
+    va_start(ap, first);
+    MMArray *arr = _initWithCStringsVaList(first, ap);
+    va_end(ap);
+    return (MMMutableArray *)arr;
+}
+
+size_t MMMutableArray_count(const MMMutableArray *arr) {
+    return MMArray_count((MMArray *)arr);
+}
+
+void *MMMutableArray_objectAtIndex(const MMMutableArray *arr, size_t index) {
+    return MMArray_objectAtIndex(arr, index);
+}
+
+void MMMutableArray_addObject(MMMutableArray * arr, void * anObject){
+    size_t newCount = arr->count + 1;
+    void **newItems = realloc(arr->items, newCount * sizeof(void*));
+    if (!newItems){
+        MMArray_release(arr);
+        printf("Error adding object to array\n");
+    }
+    ((ObjectType *)anObject)->retainCount++;
+    arr->items = newItems;
+    arr->items[arr->count] = anObject;
+    arr->count = newCount;
+}
+
+//release
+void MMMutableArray_release(MMMutableArray *arr) {
+    MMArray_release(arr);
+}
+

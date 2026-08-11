@@ -12,6 +12,8 @@ MMData *MMData_initWithCapacity(size_t length){
         free(data);
         return NULL;
     }
+    data->type = MMTypeData;
+    data->retainCount = 1;
     data->length = length;
     return data;
 }
@@ -26,6 +28,8 @@ MMData *MMData_initWithBytes(const void *bytes, size_t length){
         return NULL;
     }
     memcpy(data->buffer, bytes, length);
+    data->type = MMTypeData;
+    data->retainCount = 1;
     data->length = length;
     return data;
 
@@ -54,6 +58,9 @@ MMData *MMData_initWithContentsOfFile(MMString *path){
     fread(data->buffer, 1, length, file);
     fclose(file);
 
+    data->type = MMTypeData;
+    data->retainCount = 1;
+
     data->length = length;
     return data;
 
@@ -71,18 +78,18 @@ MMData *MMData_dataUsingEncoding(const MMString * str, MMStringEncoding enc){
     exit(1);
 }
 
-MMRange MMData_rangeOfData(MMData *self,
+MMRange MMData_rangeOfData(MMData *data,
                            MMData *dataToFind,
                            MMDataSearchOptions mask,
                            MMRange searchRange) {
 
     MMRange notFound = { MMNotFound, 0 };
 
-    if (self == NULL || dataToFind == NULL || self->buffer == NULL)
+    if (data == NULL || dataToFind == NULL || data->buffer == NULL)
         return notFound;
 
-    const unsigned char *haystack = (const unsigned char *)self->buffer;
-    size_t haystackLen = self->length;
+    const unsigned char *haystack = (const unsigned char *)data->buffer;
+    size_t haystackLen = data->length;
 
     const unsigned char *needle = (const unsigned char *)dataToFind->buffer;
     size_t needleLen = dataToFind->length;
@@ -129,8 +136,6 @@ MMRange MMData_rangeOfData(MMData *self,
             }
         }
     }
-
-
     return notFound;
 }
 
@@ -138,4 +143,21 @@ void MMData_release(MMData *data) {
     if (!data) return;
     free(data->buffer);
     free(data);
+    data = nil;
+}
+
+MMMutableData *MMMutableData_initWithCapacity(size_t size){
+    return (MMMutableData *)MMData_initWithCapacity(size);
+
+}
+MMMutableData *MMMutableData_initWithBytes(const void *bytes, size_t length){
+    return (MMMutableData *)MMData_initWithBytes(bytes, length);
+
+}
+MMMutableData *MMMutableData_initWithContentsOfFile(MMString *path){
+    return (MMMutableData *)MMData_initWithContentsOfFile(path);
+}
+
+void MMMutableData_release(MMMutableData *data) {
+    MMData_release(data);
 }

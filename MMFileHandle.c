@@ -18,7 +18,8 @@ MMFileHandle *getFileHandle(const MMString *path, int flags, int mode) {
         close(fd);
         return NULL;
     }
-
+    handle->type = MMTypeFileHandle;
+    handle->retainCount = 1;
     handle->fd = fd;
     return handle;
 }
@@ -56,6 +57,11 @@ MMData *MMFileHandle_readDataOfLength(MMFileHandle *handle, size_t length){
     return d;
 }
 
+MMData *MMfileHandle_readDataToEndOfFile(MMFileHandle *handle){
+    size_t size = MMFileHandle_seekToEndOfFile(handle);
+    return MMFileHandle_readDataOfLength(handle, size);
+}
+
 ssize_t MMFileHandle_availableData(MMFileHandle *handle, void *buffer) {
     off_t currentOffset = lseek(handle->fd, 0, SEEK_CUR);
     off_t endOffset = lseek(handle->fd, 0, SEEK_END);
@@ -67,8 +73,8 @@ ssize_t MMFileHandle_availableData(MMFileHandle *handle, void *buffer) {
 }
 
 
-ssize_t MMFileHandle_writeData(MMFileHandle *handle, const void *buffer, size_t size) {
-    return write(handle->fd, buffer, size);
+ssize_t MMFileHandle_writeData(MMFileHandle *handle, const MMData *data) {
+    return write(handle->fd, data->buffer, data->length);
 }
 
 void MMFileHandle_truncateAtFileOffset(MMFileHandle *handle, off_t offset){     
@@ -80,9 +86,16 @@ off_t MMFileHandle_offsetInFile(MMFileHandle *handle) {
     return lseek(handle->fd, 0, SEEK_CUR);
 }
 
-void MMFileHandle_close(MMFileHandle *handle) {
+void MMFileHandle_synchronizeFile(MMFileHandle *handle) {
+    if (handle) {
+        fsync(handle->fd);
+    }
+}
+
+void MMFileHandle_closeFile(MMFileHandle *handle) {
     if (handle) {
         close(handle->fd);
         free(handle);
     }
+    handle = nil;
 }

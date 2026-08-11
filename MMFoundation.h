@@ -10,13 +10,14 @@
 #include <fcntl.h>
 #include <unistd.h>
 
+#include "MMError.h"
 #include "MMTypes.h"
-#include "MMArray.h"
 #include "MMFileHandle.h"
-#include "MMMutableData.h"
 #include "MMString.h"
 #include "MMUtilities.h"
 #include "MMDate.h"
 #include "MMFileManager.h"
+#include "MMArray.h"
+#include "MMNumber.h"
 
 #endif /* MMFOUNDATION_H */
