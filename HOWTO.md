@@ -8,7 +8,37 @@ Overview
 
 This HOWTO is intended for contributors working inside the `MMFoundation` library itself or for users of the library. It documents how to use the library's APIs from other sources inside the same repository (or from small example programs), and it explains internal conventions you should follow when adding or modifying code in `MMFoundation/`.
 
-API usage (for library consumers inside the repo)
+Including `MMFoundation` in another project
+
+If you want to bring `MMFoundation` into the root of another repository, here are a few common approaches; replace `https://github.com/mesanabinladen/MMFoundation.git` with the repository HTTPS/SSH URL.
+
+- Simple clone into your project root:
+
+```sh
+git clone https://github.com/mesanabinladen/MMFoundation.git MMFoundation
+```
+
+- As a git submodule (recommended when you want to keep upstream history separate and update easily):
+
+```sh
+git submodule add https://github.com/mesanabinladen/MMFoundation.git MMFoundation
+git submodule update --init --recursive
+```
+
+- As a git subtree (useful if you prefer the code copied into your tree but want occasional pulls):
+
+```sh
+git remote add mmfoundation https://github.com/mesanabinladen/MMFoundation.git
+git subtree add --prefix=MMFoundation mmfoundation main --squash
+```
+
+After adding the code, commit the change to your repository so the library becomes part of your project tree.
+
+Include the header in your project 
+
+```c
+#include "MMFoundation/MMFoundation.h"
+```
 
 Create and free `MMString` objects:
 
@@ -70,4 +100,5 @@ When adding new public functions:
 1. Add the declaration to the appropriate header in `MMFoundation/`.
 2. Implement the function in a `.c` file, follow existing style and memory conventions.
 3. Rebuild the static archive and test you code.
+
 
