@@ -8,6 +8,7 @@
 #include <stdarg.h>
 #include <errno.h>
 #include <limits.h>
+#include <stdint.h>
 #include <sys/time.h>
 #include <sys/stat.h>
 #include <fcntl.h>

@@ -1,5 +1,5 @@
 #include "MMArray.h"
-#include "MacTypes.h"
+#include "MMTypes.h"
 #include "MMData.h"
 #include "MMDate.h"
 #include "MMFileHandle.h"

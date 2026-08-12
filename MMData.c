@@ -127,8 +127,9 @@ void MMMutableData_appendBytes(MMMutableData * data, const void * bytes, MMUInte
     size_t originalLength = data->length;
     size_t newLength = data->length + length;
     data->buffer = realloc(data->buffer, newLength);      
-        
-    memcpy(&data->buffer[originalLength], bytes, length);
+    
+    unsigned char *dst = (unsigned char *)data->buffer;
+    memcpy(dst + originalLength, bytes, length);
 
 }
 
