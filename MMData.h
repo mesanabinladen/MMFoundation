@@ -35,6 +35,9 @@ MMMutableData *MMMutableData_initWithCapacity(size_t size);
 MMMutableData *MMMutableData_initWithBytes(const void *bytes, size_t length);
 MMMutableData *MMMutableData_initWithContentsOfFile(MMString *path);
 
+void MMMutableData_appendBytes(MMMutableData * data, const void * bytes, MMUInteger length);
+void MMMutableData_appendData(MMMutableData * data, MMData * other);
+
 void MMMutableData_release(MMMutableData *data);
 
 #endif /* MMDATA_H */

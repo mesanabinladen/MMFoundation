@@ -67,15 +67,8 @@ MMData *MMData_initWithContentsOfFile(MMString *path){
 }
 
 MMData *MMData_dataUsingEncoding(const MMString * str, MMStringEncoding enc){
-    switch(enc) {
-        case MMUTF8StringEncoding:
-            return MMData_initWithBytes(str->cstring, str->length);
-            break;
-        default:
-            break;
-    }
-    printf("StringEncoding not yet implemented!\n");
-    exit(1);
+    //MMStringEncoding are not yet implemented!
+    return MMData_initWithBytes(str->cstring, str->length);
 }
 
 MMRange MMData_rangeOfData(MMData *data,
@@ -157,6 +150,22 @@ MMMutableData *MMMutableData_initWithBytes(const void *bytes, size_t length){
 MMMutableData *MMMutableData_initWithContentsOfFile(MMString *path){
     return (MMMutableData *)MMData_initWithContentsOfFile(path);
 }
+
+void MMMutableData_appendBytes(MMMutableData * data, const void * bytes, MMUInteger length){
+    if (!data || !bytes || !length) return;
+
+    size_t originalLength = data->length;
+    size_t newLength = data->length + length;
+    data->buffer = realloc(data->buffer, newLength);      
+        
+    memcpy(&data->buffer[originalLength], bytes, length);
+
+}
+
+void MMMutableData_appendData(MMMutableData * data, MMData * other){
+    MMMutableData_appendBytes(data, other->buffer, other->length);
+}
+
 
 void MMMutableData_release(MMMutableData *data) {
     MMData_release(data);

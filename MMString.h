@@ -16,6 +16,8 @@ MMString *MMString_initWithFormat(const char *format, ...);
 /* Return the C string */
 const char *MMString_cString(const MMString *str);
 
+const char *MMString_cStringUsingEncoding(const MMString *str, MMStringEncoding enc);
+
 /* Return a new MMString with the last path component removed  */
 MMString *MMString_stringByDeletingLastPathComponent(const MMString *path);
 
@@ -45,5 +47,8 @@ MMString * MMString_stringByReplacingOccurrencesOfString(MMString *str, MMString
 
 /* Free the MMString */
 void MMString_release(MMString *str);
+
+typedef MMString MMMutableString ;
+
 
 #endif /* MMSTRING_H */

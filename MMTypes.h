@@ -3,11 +3,18 @@
 
 #include <stddef.h>
 
+#if defined(_WIN32) || defined(_WIN64)
+    #define MM_PATH_SEPARATOR (char)'\\'
+    #define MMNotFound  (UINT_MAX-1) //32 bit on windows
+#else
+    #define MM_PATH_SEPARATOR (char)'/'
+    #define MMNotFound  (UINT32_MAX-1) //32 bit on posix
+#endif 
+
 #define YES 1
 #define NO 0
 #define nil ((void*)0)
 
-#define MMNotFound  (UINT_MAX-1) //32 bit 
 /* Use a project-local boolean type to avoid conflicting with Windows' BOOL (which is an int).
     Prefer migrating code to use `MMBool` to avoid ABI conflicts with WinAPI. */
 

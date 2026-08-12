@@ -76,11 +76,8 @@ MMString *MMString_initWithFormat(const char *format, ...) {
 MMString *MMString_stringByDeletingLastPathComponent(const MMString *path){
     if (!path || !path->cstring) return nil;
 
-#if defined(_WIN32) || defined(_WIN64)
-    char *lastSlash = strrchr(path->cstring, '\\');
-#else
-    char *lastSlash = strrchr(path->cstring, '/');
-#endif
+    char *lastSlash = strrchr(path->cstring, MM_PATH_SEPARATOR);
+
     if (!lastSlash) {
         // No slash found, return an empty string
         MMString *newStr = MMString_init(0);
@@ -117,11 +114,10 @@ MMString * MMString_stringByAppendingPathComponent(MMString * base, MMString *st
     if (!newStr) return nil;
 
     strcpy(newStr->cstring, base->cstring);
-#if defined(_WIN32) || defined(_WIN64)
-    strcat(newStr->cstring, "\\");
-#else
-    strcat(newStr->cstring, "/");
-#endif 
+
+    char separator[2] = {MM_PATH_SEPARATOR, '\0'};
+    strcat(newStr->cstring, separator);
+
     strcat(newStr->cstring, str->cstring);
     return newStr;
 }
@@ -147,6 +143,12 @@ const char *MMString_cString(const MMString *str) {
     return str ? str->cstring : nil;
 }       
 
+const char *MMString_cStringUsingEncoding(const MMString *str, MMStringEncoding enc){
+    //MMStringEncoding are not yet implemented!
+    return MMString_cString(str);
+}
+
+
 MMString * MMString_stringWithContentsOfFile(MMString * path, MMStringEncoding enc, MMError *error){
     if (error){
         printf("Error codes not implemented yet!");
@@ -157,11 +159,7 @@ MMString * MMString_stringWithContentsOfFile(MMString * path, MMStringEncoding e
     MMData *data = MMData_initWithContentsOfFile(path);
     if (!data) return nil;
 
-    if (enc != MMUTF8StringEncoding) {
-        MMData_release(data);
-        return nil;
-    }
-
+    //MMStringEncoding are not yet implemented!
     MMString *str = MMString_init(data->length);
     if (!str) {
         MMData_release(data);
@@ -288,7 +286,7 @@ MMBool MMString_isEqualToString(MMString *str, MMString * aString){
 }
 
 MMUInteger MSString_lengthOfBytesUsingEncoding(MMString *str, MMStringEncoding enc){
-    //encoding are not yet implemented!
+    //MMStringEncoding are not yet implemented!
     return str->length;   
 }
 

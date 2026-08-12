@@ -68,14 +68,18 @@ MMData *MMfileHandle_readDataToEndOfFile(MMFileHandle *handle){
     return MMFileHandle_readDataOfLength(handle, size);
 }
 
-ssize_t MMFileHandle_availableData(MMFileHandle *handle, void *buffer) {
+MMData * MMFileHandle_availableData(MMFileHandle *handle) {
     off_t currentOffset = lseek(handle->fd, 0, SEEK_CUR);
     off_t endOffset = lseek(handle->fd, 0, SEEK_END);
     lseek(handle->fd, currentOffset, SEEK_SET); // Restore the original offset
 
     size_t availableSize = (size_t)(endOffset - currentOffset);
 
-    return read(handle->fd, buffer, availableSize);
+    MMData *d = MMData_initWithCapacity(availableSize);
+
+    read(handle->fd, d->buffer, availableSize);
+
+    return d;
 }
 
 
@@ -83,7 +87,7 @@ ssize_t MMFileHandle_writeData(MMFileHandle *handle, const MMData *data) {
     return write(handle->fd, data->buffer, data->length);
 }
 
-void MMFileHandle_truncateAtFileOffset(MMFileHandle *handle, off_t offset){     
+void MMFileHandle_truncateFileAtOffset(MMFileHandle *handle, off_t offset){     
     if (!handle) return;
     ftruncate(handle->fd, offset);
 }   
