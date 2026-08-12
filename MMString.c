@@ -362,6 +362,18 @@ MMMutableString *MMMutableString_initWithCString(const char *str){
     return (MMMutableString *)MMString_initWithCString(str);
 }
 
+void MMMutableString_appendString(MMMutableString *str, MMString * aString){
+      if (!str || !aString) return;
+
+    size_t originalLength = str->length;
+    size_t newLength = str->length + aString->length;//added string terminator!
+    str->cstring = realloc(str->cstring, newLength + 1);      
+        
+    memcpy(&str->cstring[originalLength], aString->cstring, aString->length);
+    str->cstring[newLength]='\0';
+    str->length=newLength;
+}
+
 void MMMutableString_release(MMMutableString *str){
     MMString_release((MMString *)str);
 }

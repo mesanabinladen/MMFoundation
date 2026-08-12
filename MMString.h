@@ -55,6 +55,9 @@ void MMString_release(MMString *str);
 typedef MMString MMMutableString ;
 
 MMMutableString *MMMutableString_initWithCString(const char *str);
+
+void MMMutableString_appendString(MMMutableString *str, MMString * aString);
+
 void MMMutableString_release(MMMutableString *str);
 
 #endif /* MMSTRING_H */
