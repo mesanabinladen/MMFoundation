@@ -94,6 +94,7 @@ typedef enum {
     MMUTF32StringEncoding,
     MMUTF32StringEncoding,
     */
+    MMASCIIStringEncoding,
     MMUTF8StringEncoding
 } MMStringEncoding;
 

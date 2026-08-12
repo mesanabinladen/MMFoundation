@@ -18,6 +18,8 @@ void MMAutoreleasePool_init(){
         printf("Error! Autoreleasepool already allocated\n");
         exit(1);
     }
+    poolObjects = MMMutableArray_init();
+    //pool must be enabled AFTER the initialization!
     poolExists=YES;
 }
 

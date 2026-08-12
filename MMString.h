@@ -45,11 +45,14 @@ MMUInteger MSString_lengthOfBytesUsingEncoding(MMString *str, MMStringEncoding e
 
 MMString * MMString_stringByReplacingOccurrencesOfString(MMString *str, MMString *target, MMString *replacement);
 
+const char * MMString_fileSystemRepresentation(MMString *str);
+
 /* Free the MMString */
 void MMString_release(MMString *str);
 
 typedef MMString MMMutableString ;
 
+MMMutableString *MMMutableString_initWithCString(const char *str);
 void MMMutableString_release(MMMutableString *str);
 
 #endif /* MMSTRING_H */

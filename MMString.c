@@ -328,12 +328,22 @@ MMString *MMString_stringByReplacingOccurrencesOfString(MMString *str, MMString 
     return out;
 }
 
+const char * MMString_fileSystemRepresentation(MMString *str){
+    //TODO: implement true checks!
+    return str->cstring;
+}
+
 //release
 void MMString_release(MMString *str) {
     if (!str) return;
     free(str->cstring);
     free(str);
     str = nil;
+}
+
+//-----MUTABLE STRING
+MMMutableString *MMMutableString_initWithCString(const char *str){
+    return (MMMutableString *)MMString_initWithCString(str);
 }
 
 void MMMutableString_release(MMMutableString *str){
