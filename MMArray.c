@@ -1,14 +1,10 @@
-#include <stdlib.h>
-#include <stdarg.h>
-#include <string.h>
-#include <stdio.h>
-
 #include "MMArray.h"
+#include "MacTypes.h"
 #include "MMData.h"
 #include "MMDate.h"
 #include "MMFileHandle.h"
 #include "MMString.h"
-#include "MMUtilities.h"
+#include "MMMemoryManagement.h"
 
 MMArray *_initWithObjectsVaList(void *first, va_list ap) {
 
@@ -78,10 +74,8 @@ MMArray *_initWithCStringsVaList(void *first, va_list ap) {
 
 /*Create an empty MMArray */
 MMArray *MMArray_init(void){
-    MMArray *arr = (MMArray*)malloc(sizeof(MMArray));
-    if (!arr) return nil;
-    arr->type = MMTypeArray;
-    arr->retainCount = 1;
+    MMArray *arr = MM_init(MMTypeArray);
+
     arr->items = nil;
     arr->count = 0;
     return arr;
@@ -135,15 +129,13 @@ MMMutableArray *MMMutableArray_init(void){
 }
 
 MMMutableArray *MMMutableArray_initWithCapacity(size_t length){
-    MMMutableArray *arr = (MMMutableArray*)malloc(sizeof(MMMutableArray));
-    if (!arr) return nil;
-
+    MMMutableArray *arr = MM_init(MMTypeMutableArray);
+    
     arr->items = malloc(length*sizeof(void *));
     if (!arr->items ) {
         return nil;
     }
-    arr->type = MMTypeArray;
-    arr->retainCount = 1;
+
     arr->capacity = length;
     arr->count = 0;
     return arr;

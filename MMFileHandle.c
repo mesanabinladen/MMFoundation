@@ -1,14 +1,5 @@
 #include "MMFileHandle.h"
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-#if defined(_WIN32) || defined(_WIN64)
-#include <io.h>
-#else
-#include <unistd.h>
-#endif
+#include "MMTypes.h"
 
 //private function to create a file if it doesn't exist
 MMFileHandle *getFileHandle(const MMString *path, int flags, int mode) {
@@ -19,7 +10,7 @@ MMFileHandle *getFileHandle(const MMString *path, int flags, int mode) {
         return NULL;
     }
 
-    MMFileHandle *handle = (MMFileHandle*)malloc(sizeof(MMFileHandle));
+    MMFileHandle *handle = MM_init(MMTypeFileHandle);
     if (!handle) {
         close(fd);
         return NULL;

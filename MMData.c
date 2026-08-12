@@ -1,36 +1,23 @@
 #include "MMData.h"
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include "MMTypes.h"
 
 MMData *MMData_initWithCapacity(size_t length){
-    MMData *data = (MMData*)malloc(sizeof(MMData));
-    if (!data) return NULL;
+    MMData *data = MM_init(MMTypeData);
+
     data->buffer = malloc(length);
     if (!data->buffer) {
         free(data);
         return NULL;
     }
-    data->type = MMTypeData;
-    data->retainCount = 1;
+
     data->length = length;
     return data;
 }
 
 //Initializes a data object filled with a given number of bytes copied from a given buffer.
 MMData *MMData_initWithBytes(const void *bytes, size_t length){
-    MMData *data = (MMData*)malloc(sizeof(MMData));
-    if (!data) return NULL;
-    data->buffer = malloc(length);
-    if (!data->buffer) {
-        free(data);
-        return NULL;
-    }
+    MMData *data = MMData_initWithCapacity(length);
     memcpy(data->buffer, bytes, length);
-    data->type = MMTypeData;
-    data->retainCount = 1;
-    data->length = length;
     return data;
 
 }
@@ -42,28 +29,11 @@ MMData *MMData_initWithContentsOfFile(MMString *path){
     size_t length = ftell(file);
     rewind(file);
 
-    MMData *data = (MMData*)malloc(sizeof(MMData));
-    if (!data) {
-        fclose(file);
-        return NULL;
-    }
-
-    data->buffer = malloc(length);
-    if (!data->buffer) {
-        free(data);
-        fclose(file);
-        return NULL;
-    }
-
+    MMData *data = MMData_initWithCapacity(length);
     fread(data->buffer, 1, length, file);
     fclose(file);
 
-    data->type = MMTypeData;
-    data->retainCount = 1;
-
-    data->length = length;
     return data;
-
 }
 
 MMData *MMData_dataUsingEncoding(const MMString * str, MMStringEncoding enc){

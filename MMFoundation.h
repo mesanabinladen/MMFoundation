@@ -13,10 +13,11 @@
 #include "MMTypes.h"
 #include "MMFileHandle.h"
 #include "MMString.h"
-#include "MMUtilities.h"
+#include "MMMemoryManagement.h"
 #include "MMDate.h"
 #include "MMFileManager.h"
 #include "MMArray.h"
 #include "MMNumber.h"
+#include "MMRange.h"
 
 #endif /* MMFOUNDATION_H */

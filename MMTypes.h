@@ -2,13 +2,27 @@
 #define MMTYPES_H
 
 #include <stddef.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stdarg.h>
+#include <errno.h>
+#include <limits.h>
+#include <sys/time.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
+
+#include "MMMemoryManagement.h"
 
 #if defined(_WIN32) || defined(_WIN64)
     #define MM_PATH_SEPARATOR (char)'\\'
     #define MMNotFound  (UINT_MAX-1) //32 bit on windows
+    #include <io.h>
 #else
     #define MM_PATH_SEPARATOR (char)'/'
     #define MMNotFound  (UINT32_MAX-1) //32 bit on posix
+    #include <unistd.h>
 #endif 
 
 #define YES 1
@@ -27,10 +41,13 @@ typedef enum {
     MMTypeNone,
     MMTypeFreed,
     MMTypeArray,
+    MMTypeMutableArray,
     MMTypeData,
+    MMTypeMutableData,
     MMTypeDate,
     MMTypeFileHandle,
     MMTypeString,
+    MMTypeMutableString,
     MMTypeNumber
 } ObjectTypes;
 

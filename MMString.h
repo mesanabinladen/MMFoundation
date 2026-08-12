@@ -50,5 +50,6 @@ void MMString_release(MMString *str);
 
 typedef MMString MMMutableString ;
 
+void MMMutableString_release(MMMutableString *str);
 
 #endif /* MMSTRING_H */

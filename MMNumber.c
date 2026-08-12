@@ -1,13 +1,8 @@
 #include "MMNumber.h"
-
-#include <stdlib.h>
-
 #include "MMTypes.h"
 
 MMNumber * MMNumber_numberWithUnsignedInt(unsigned int value){
-    MMNumber * n = malloc(sizeof(MMNumber *));
-    n->type=MMTypeNumber;
-    n->retainCount=1;
+    MMNumber * n = MM_init(MMTypeNumber);
     n->ui = value;
     return n;
 }

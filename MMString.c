@@ -1,21 +1,14 @@
-#include <stdlib.h>
-#include <stdarg.h>
-#include <string.h>
-#include <stdio.h>
 #include "MMTypes.h"
-#include <errno.h>
-#include <limits.h>
 
 #include "MMString.h"
 #include "MMData.h"
 #include "MMError.h"
 #include "MMArray.h"
-#include "MMTypes.h"
 
 /*Create an empty MMString */
 MMString * MMString_init(size_t capacity){
-    MMString *str = (MMString*)malloc(sizeof(MMString));
-    if (!str) return nil;
+    MMString *str = MM_init(MMTypeString);
+
     if (capacity < 0) {
         str->cstring = nil;
     } 
@@ -27,9 +20,8 @@ MMString * MMString_init(size_t capacity){
         }
         str->cstring[capacity] = '\0';
     }  
-    str->type = MMTypeString;
-    str->retainCount=1;
     str->length = capacity;
+
     return str;
 }
 
@@ -343,6 +335,11 @@ void MMString_release(MMString *str) {
     free(str);
     str = nil;
 }
+
+void MMMutableString_release(MMMutableString *str){
+    MMString_release((MMString *)str);
+}
+
 
 
 

@@ -10,7 +10,7 @@ To keep the library recognizable and familiar to people coming from Apple’s ec
 
 It is important to note that this is not a true object-oriented implementation. Since the project is written in C, it cannot provide full Objective-C-style object semantics. Instead, it offers a Foundation-like API and naming style using plain C structs and functions.
 
-Similarly, features such as autorelease pools or automatic reference counting are not be implemented for the moment. Memory management will remain completely under the control of the programmer, in a pure C style.
+Similarly, features such as automatic reference counting are not be implemented for the moment. Memory management will remain completely under the control of the programmer, in a pure C style, apart for a ultra-simple port of NSAutoreleasePool (MMAutoreleasePool)
 
 In short, this library is an experiment in creating a lightweight, portable Foundation-like toolkit for C, inspired by the design of Apple’s Objective-C APIs.
 
