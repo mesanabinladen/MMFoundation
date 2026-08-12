@@ -107,7 +107,7 @@ MMAutoreleasePool_init();
 MMAutoreleasePool_drain();
 ```
 
-This is useful for parsing loops or temporary work scopes. `Parser.c` uses the same pattern: it calls `MMAutoreleasePool_init()` at the start of each iteration and `MMAutoreleasePool_drain()` at the end, so all temporary objects created inside the loop are cleared automatically.
+This is useful for parsing loops or temporary work scopes.
 
 Conventions and tips for contributors
 
