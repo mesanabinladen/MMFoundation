@@ -78,6 +78,11 @@ void * MM_init(int type){
     return ptr;
 }
 
+void MM_retain(void* anObject){
+    ObjectType * ptr = (ObjectType *)anObject;
+    ptr->retainCount++;
+}
+
 void MM_release(void* anObject){
     ObjectType * ptr = (ObjectType *)anObject;
     ptr->retainCount--;

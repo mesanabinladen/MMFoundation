@@ -341,6 +341,22 @@ void MMString_release(MMString *str) {
     str = nil;
 }
 
+MMBool MMString_getCString(MMString *str, char * buffer, MMUInteger maxBufferCount, MMStringEncoding encoding){
+    //MMStringEncoding are not yet implemented!
+    if (!str || !str->cstring || !buffer || maxBufferCount == 0) return NO;
+
+    if (maxBufferCount > str->length) {
+        buffer[0] = '\0';
+        return NO;
+    }
+
+    memcpy(buffer, str->cstring, maxBufferCount);
+    buffer[maxBufferCount] = '\0';
+
+    return YES;
+}
+
+
 //-----MUTABLE STRING
 MMMutableString *MMMutableString_initWithCString(const char *str){
     return (MMMutableString *)MMString_initWithCString(str);

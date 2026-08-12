@@ -85,6 +85,30 @@ if (contents) {
 MMString_release(path);
 ```
 
+Using `MMAutoreleasePool_init` / `MMAutoreleasePool_drain`
+
+`MMFoundation` includes a very small autorelease-pool style helper for temporary objects. When a pool is active, objects created via `MM_init()` and its helpers are tracked and can be released when the pool is drained.
+
+```c
+MMAutoreleasePool_init();
+{
+    MMString *tmpString = MMString_initWithCString("temporary");
+    MMString *tmpPath = MMString_initWithCString("/tmp/example.txt");
+    MMData *data = MMData_initWithContentsOfFile(tmpPath);
+
+    if (data) {
+        /* use data here */
+        MMData_release(data); // optional, pool will also clean it up
+    }
+
+    MMString_release(tmpString); // optional manual release
+    MMString_release(tmpPath);  // optional manual release
+}
+MMAutoreleasePool_drain();
+```
+
+This is useful for parsing loops or temporary work scopes. `Parser.c` uses the same pattern: it calls `MMAutoreleasePool_init()` at the start of each iteration and `MMAutoreleasePool_drain()` at the end, so all temporary objects created inside the loop are cleared automatically.
+
 Conventions and tips for contributors
 
 - Memory: most factory functions allocate heap objects; free them with the matching `MM..._release` or the generic `MM_release` function.

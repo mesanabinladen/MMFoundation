@@ -27,8 +27,7 @@ MMArray *_initWithObjectsVaList(void *first, va_list ap) {
     obj = first;
     numObj = 0;
     while (obj) {
-        ObjectType * ptr = (ObjectType *)obj;
-        ptr->retainCount++;
+        MM_retain(obj);
         arr->items[numObj] = obj;
         numObj++;
         obj = va_arg(copy, void*);
@@ -130,7 +129,7 @@ MMMutableArray *MMMutableArray_init(void){
 
 MMMutableArray *MMMutableArray_initWithCapacity(size_t length){
     MMMutableArray *arr = MM_init(MMTypeMutableArray);
-    
+
     arr->items = malloc(length*sizeof(void *));
     if (!arr->items ) {
         return nil;

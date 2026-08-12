@@ -80,6 +80,8 @@ typedef struct MMRange {
     MMUInteger length;
 } MMRange;
 
+typedef MMRange * MMRangePointer;
+
 typedef enum {
     /*
     MMUTF16BigEndianStringEncoding,

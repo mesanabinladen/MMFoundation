@@ -45,6 +45,8 @@ MMUInteger MSString_lengthOfBytesUsingEncoding(MMString *str, MMStringEncoding e
 
 MMString * MMString_stringByReplacingOccurrencesOfString(MMString *str, MMString *target, MMString *replacement);
 
+MMBool MMString_getCString(MMString *str, char * buffer, MMUInteger maxBufferCount, MMStringEncoding encoding);
+
 const char * MMString_fileSystemRepresentation(MMString *str);
 
 /* Free the MMString */
