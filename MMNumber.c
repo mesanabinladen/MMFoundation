@@ -79,10 +79,7 @@ MMNumber * MMNumber_numberWithDouble(double value){
     return n;
 }
 
-
-
 void MMNumber_release(MMNumber * recv){
     if (!recv) return;
     free(recv);
-    recv = nil;
 }

@@ -13,7 +13,7 @@ MMString *MMString_stringByDeletingLastPathComponent(const MMString *recv);
 MMString *MMString_stringByAppendingString(const MMString *recv, const MMString *append);
 MMString *MMString_stringByAppendingPathComponent(const MMString *recv, MMString *str);
 MMString *MMString_stringByAppendingCPathComponent(const MMString *recv, char *str);
-MMBool MMString_writeToFile(const MMString *recv, const MMString *path, MMBool atomically);
+MMBool MMString_writeToFile(const MMString *recv, const MMString *path, MMBool useAuxiliaryFile);
 MMString *MMString_stringWithContentsOfFile(MMString * path, MMStringEncoding enc, MMError *error);
 MMArray *MMString_componentsSeparatedByString(const MMString *recv, MMString * separator);
 MMInteger MMString_integerValue(const MMString *recv);

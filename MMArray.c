@@ -159,7 +159,6 @@ void MMArray_release(MMArray *recv) {
     }
     free(recv->items);
     free(recv);
-    recv = nil;
 }
 
 MMMutableArray *MMMutableArray_init(void){

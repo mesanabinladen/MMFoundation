@@ -115,10 +115,10 @@ MMString * MMString_stringByAppendingCPathComponent(const MMString *recv, char *
     return newStr;
 }
 
-MMBool MMString_writeToFile(const MMString *recv, const MMString *path, MMBool atomically) {
+MMBool MMString_writeToFile(const MMString *recv, const MMString *path, MMBool useAuxiliaryFile) {
     if (!recv || !path || !recv->cString || !path->cString) return NO;
 
-    FILE *file = fopen(path->cString, atomically ? "w" : "w");
+    FILE *file = fopen(path->cString, useAuxiliaryFile ? "w" : "w");
     if (!file) return NO;
 
     size_t written = fwrite(recv->cString, 1, recv->length, file);
@@ -457,7 +457,6 @@ void MMString_release(MMString *recv) {
     if (!recv) return;
     free(recv->cString);
     free(recv);
-    recv = nil;
 }
 
 //-----MUTABLE STRING

@@ -27,5 +27,6 @@ void MMFileHandle_truncateFileAtOffset(MMFileHandle *recv, off_t offset);
 off_t MMFileHandle_offsetInFile(const MMFileHandle *recv);
 void MMFileHandle_synchronizeFile(MMFileHandle *recv);
 void MMFileHandle_closeFile(MMFileHandle *recv);
+void MMFileHandle_release(MMFileHandle *recv);
 
 #endif /*MMFILEHANDLE_H*/

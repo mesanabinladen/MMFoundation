@@ -95,9 +95,16 @@ void MMFileHandle_synchronizeFile(MMFileHandle *recv) {
 }
 
 void MMFileHandle_closeFile(MMFileHandle *recv) {
-    if (recv) {
-        close(recv->fd);
-        free(recv);
+    if (!recv) return;
+    close(recv->fd);
+    recv->fd=0;
+}
+
+void MMFileHandle_release(MMFileHandle *recv){
+    if (!recv) return;
+    if (recv->fd!=0)
+    {
+        MMFileHandle_closeFile(recv);
     }
-    recv = nil;
+    free(recv);
 }

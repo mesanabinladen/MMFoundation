@@ -104,6 +104,18 @@ MMRange MMData_rangeOfData(const MMData *recv, MMData *dataToFind, MMDataSearchO
     return notFound;
 }
 
+MMBool MMData_writeToFile(const MMData *recv, const MMString *path, MMBool useAuxiliaryFile) {
+    if (!recv || !path || !recv->bytes || !path->cString) return NO;
+
+    FILE *file = fopen(path->cString, useAuxiliaryFile ? "w" : "w");
+    if (!file) return NO;
+
+    size_t written = fwrite(recv->bytes, 1, recv->length, file);
+    fclose(file);
+
+    return written == recv->length;
+}
+
 MMData *MMData_copy(MMData * recv){
     if (!recv) return nil;
     
@@ -114,7 +126,6 @@ void MMData_release(MMData *recv) {
     if (!recv) return;
     free(recv->bytes);
     free(recv);
-    recv = nil;
 }
 
 MMMutableData *MMMutableData_initWithCapacity(size_t size){
@@ -149,6 +160,9 @@ void MMMutableData_appendData(MMMutableData * recv, MMData * other){
     MMMutableData_appendBytes(recv, other->bytes, other->length);
 }
 
+MMBool MMMutableData_writeToFile(const MMMutableData *recv, const MMString *path, MMBool useAuxiliaryFile){
+    return MMData_writeToFile((const MMData *)recv, path, useAuxiliaryFile);
+}
 MMMutableData *MMMutableData_copy(MMMutableData * recv){
     return (MMMutableData *)MMData_copy((MMData*)recv);
 }

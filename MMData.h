@@ -25,6 +25,7 @@ MMData *MMData_initWithContentsOfFile(const MMString *path);
 void MMData_getBytes(const MMData* recv, void * buffer , MMUInteger length);
 MMData *MMData_dataUsingEncoding(const MMString * str, MMStringEncoding enc);
 MMRange MMData_rangeOfData(const MMData *recv, MMData *dataToFind, MMDataSearchOptions mask, MMRange searchRange);
+MMBool MMData_writeToFile(const MMData *recv, const MMString * path, MMBool useAuxiliaryFile);
 MMData *MMData_copy(MMData * recv);
 void MMData_release(MMData *recv);
 
@@ -45,6 +46,7 @@ MMMutableData *MMMutableData_initWithContentsOfFile(MMString *path);
 void MMutableData_getBytes(const MMMutableData * recv, void * buffer , MMUInteger length);
 void MMMutableData_appendBytes(MMMutableData * recv, const void * bytes, MMUInteger length);
 void MMMutableData_appendData(MMMutableData * recv, MMData * other);
+MMBool MMMutableData_writeToFile(const MMMutableData *recv, const MMString *path, MMBool useAuxiliaryFile);
 MMMutableData *MMMutableData_copy(MMMutableData * recv);
 void MMMutableData_release(MMMutableData *recv);
 

@@ -162,7 +162,7 @@ void MM_release(void* anObject){
                 MMDate_release((MMDate *)ptr);
                 break;
             case (MMTypeFileHandle):
-                MMFileHandle_closeFile((MMFileHandle *)ptr);
+                MMFileHandle_release((MMFileHandle *)ptr);
                 break;
             case (MMTypeString):
                 MMString_release((MMString *)ptr);

@@ -19,5 +19,4 @@ MMTimeInterval MMDate_timeIntervalSinceDate(const MMDate *recv, MMDate *anotherD
 void MMDate_release(MMDate *recv){
     if (!recv) return;
     free(recv);
-    recv = nil;
 }
