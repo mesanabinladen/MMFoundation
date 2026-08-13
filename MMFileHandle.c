@@ -65,14 +65,14 @@ MMData * MMFileHandle_availableData(const MMFileHandle *recv) {
 
     MMData *d = MMData_initWithCapacity(availableSize);
 
-    read(recv->fd, d->buffer, availableSize);
+    read(recv->fd, d->bytes, availableSize);
 
     return d;
 }
 
 
 ssize_t MMFileHandle_writeData(MMFileHandle *recv, const MMData *data) {
-    return write(recv->fd, data->buffer, data->length);
+    return write(recv->fd, data->bytes, data->length);
 }
 
 void MMFileHandle_truncateFileAtOffset(MMFileHandle *recv, off_t offset){     

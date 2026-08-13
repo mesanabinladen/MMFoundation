@@ -150,7 +150,7 @@ MMString * MMString_stringWithContentsOfFile(MMString * path, MMStringEncoding e
     }
 
     if (str->length > 0) {
-        memcpy(str->cString, data->buffer, str->length);
+        memcpy(str->cString, data->bytes, str->length);
     }
 
     MMData_release(data);

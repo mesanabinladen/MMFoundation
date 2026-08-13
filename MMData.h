@@ -9,7 +9,7 @@ typedef struct MMData {
     int type;
     int retainCount;
     //-------------
-    void *buffer;
+    void *bytes;
     size_t length;
 } MMData;
 
@@ -28,7 +28,16 @@ MMRange MMData_rangeOfData(const MMData *recv, MMData *dataToFind, MMDataSearchO
 MMData *MMData_copy(MMData * recv);
 void MMData_release(MMData *recv);
 
-typedef MMData MMMutableData ;
+typedef struct MMMutableData {
+    int type;
+    int retainCount;
+    //-------------
+    union{
+        void *bytes;
+        void *mutableBytes;
+    };
+    size_t length;
+} MMMutableData;
 
 MMMutableData *MMMutableData_initWithCapacity(size_t size);
 MMMutableData *MMMutableData_initWithBytes(const void *bytes, size_t length);
