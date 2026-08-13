@@ -11,15 +11,13 @@ MMDate * MMDate_init(){
     return date;
 }
 
-MMTimeInterval MMDate_timeIntervalSinceDate(MMDate *date, MMDate *anotherDate){
-    return (date->timeIntervalSinceReferenceDate - anotherDate->timeIntervalSinceReferenceDate) / 1000;
+MMTimeInterval MMDate_timeIntervalSinceDate(const MMDate *recv, MMDate *anotherDate){
+    return (recv->timeIntervalSinceReferenceDate - anotherDate->timeIntervalSinceReferenceDate) / 1000;
 }
 
 //release
-void MMDate_release(MMDate *date){
-    if (!date) {
-        return;
-    }
-    free(date);
-    date = nil;
+void MMDate_release(MMDate *recv){
+    if (!recv) return;
+    free(recv);
+    recv = nil;
 }

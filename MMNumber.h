@@ -8,9 +8,7 @@ typedef struct MMNumber {
     unsigned int ui;
 } MMNumber;
 
-
 MMNumber * MMNumber_numberWithUnsignedInt(unsigned int value);
-
 void MMNumber_release(MMNumber * n);
 
-#endif
+#endif /*MMNUMBER_h*/

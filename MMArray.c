@@ -96,33 +96,32 @@ MMArray *MMArray_initWithCStringsArray(void *first, ...) {
     return arr;
 }
 
-size_t MMArray_count(const MMArray *arr) {
-    return arr ? arr->count : 0;
+size_t MMArray_count(const MMArray *recv) {
+    return recv ? recv->count : 0;
 }
 
-void *MMArray_objectAtIndex(const MMArray *arr, size_t index) {
-    if (!arr) return nil;
-    if (index >= arr->count) return nil;
-    return arr->items[index];
+void *MMArray_objectAtIndex(const MMArray *recv, size_t index) {
+    if (!recv) return nil;
+    if (index >= recv->count) return nil;
+    return recv->items[index];
 }
 
 //release
-void MMArray_release(MMArray *arr) {
-    if (!arr) return;
+void MMArray_release(MMArray *recv) {
+    if (!recv) return;
 
-    for (int i=0; i<arr->count;i++)
+    for (int i=0; i<recv->count;i++)
     {   
-        if (arr->items[i]) {
-            MM_release(arr->items[i]);
-            arr->items[i] = nil;
+        if (recv->items[i]) {
+            MM_release(recv->items[i]);
+            recv->items[i] = nil;
         }
     }
-    free(arr->items);
-    free(arr);
-    arr = nil;
+    free(recv->items);
+    free(recv);
+    recv = nil;
 }
 
-/*Create an empty MMMutableArray */
 MMMutableArray *MMMutableArray_init(void){
     return (MMMutableArray *) MMArray_init();
 }
@@ -156,29 +155,28 @@ MMMutableArray *MMMutableArray_initWithCStringsArray(void *first, ...) {
     return (MMMutableArray *)arr;
 }
 
-size_t MMMutableArray_count(const MMMutableArray *arr) {
-    return MMArray_count((MMArray *)arr);
+size_t MMMutableArray_count(const MMMutableArray *recv) {
+    return MMArray_count((MMArray *)recv);
 }
 
-void *MMMutableArray_objectAtIndex(const MMMutableArray *arr, size_t index) {
-    return MMArray_objectAtIndex(arr, index);
+void *MMMutableArray_objectAtIndex(const MMMutableArray *recv, size_t index) {
+    return MMArray_objectAtIndex(recv, index);
 }
 
-void MMMutableArray_addObject(MMMutableArray * arr, void * anObject){
-    size_t newCount = arr->count + 1;
-    void **newItems = realloc(arr->items, newCount * sizeof(void*));
+void MMMutableArray_addObject(MMMutableArray * recv, void * anObject){
+    size_t newCount = recv->count + 1;
+    void **newItems = realloc(recv->items, newCount * sizeof(void*));
     if (!newItems){
-        MMArray_release(arr);
+        MMArray_release(recv);
         printf("Error adding object to array\n");
     }
     ((ObjectType *)anObject)->retainCount++;
-    arr->items = newItems;
-    arr->items[arr->count] = anObject;
-    arr->count = newCount;
+    recv->items = newItems;
+    recv->items[recv->count] = anObject;
+    recv->count = newCount;
 }
 
-//release
-void MMMutableArray_release(MMMutableArray *arr) {
-    MMArray_release(arr);
+void MMMutableArray_release(MMMutableArray *recv) {
+    MMArray_release(recv);
 }
 

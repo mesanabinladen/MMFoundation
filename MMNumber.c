@@ -7,8 +7,8 @@ MMNumber * MMNumber_numberWithUnsignedInt(unsigned int value){
     return n;
 }
 
-void MMNumber_release(MMNumber * n){
-    if (!n) return;
-    free(n);
-    n = nil;
+void MMNumber_release(MMNumber * recv){
+    if (!recv) return;
+    free(recv);
+    recv = nil;
 }

@@ -15,8 +15,7 @@ static MMMutableArray * poolObjects = nil;
 void MMAutoreleasePool_init(){
     if (poolObjects)
     {
-        printf("Error! Autoreleasepool already allocated\n");
-        exit(1);
+        MMAutoreleasePool_drain();
     }
     poolObjects = MMMutableArray_init();
     //pool must be enabled AFTER the initialization!
@@ -26,6 +25,7 @@ void MMAutoreleasePool_init(){
 void MMAutoreleasePool_drain(){
 
     MMMutableArray_release(poolObjects);
+    poolObjects = nil;
     poolExists = NO;
 }
 
@@ -78,12 +78,14 @@ void * MM_init(int type){
     return ptr;
 }
 
-void MM_retain(void* anObject){
+void * MM_retain(void* anObject){
     ObjectType * ptr = (ObjectType *)anObject;
     ptr->retainCount++;
+    return ptr;
 }
 
 void MM_release(void* anObject){
+    if (anObject==nil) return;
     ObjectType * ptr = (ObjectType *)anObject;
     ptr->retainCount--;
     if (ptr->retainCount<0){

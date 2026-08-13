@@ -5,4 +5,4 @@
 
 MMRange MMMakeRange(MMUInteger loc, MMUInteger len);
 
-#endif
+#endif /*MMRANGE_H*/

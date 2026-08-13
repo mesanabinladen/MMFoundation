@@ -21,7 +21,7 @@ MMData *MMData_initWithBytes(const void *bytes, size_t length){
     return data;
 
 }
-MMData *MMData_initWithContentsOfFile(MMString *path){
+MMData *MMData_initWithContentsOfFile(const MMString *path){
     FILE *file = fopen(MMString_cString(path), "rb");
     if (!file) return NULL;
 
@@ -41,18 +41,15 @@ MMData *MMData_dataUsingEncoding(const MMString * str, MMStringEncoding enc){
     return MMData_initWithBytes(str->cstring, str->length);
 }
 
-MMRange MMData_rangeOfData(MMData *data,
-                           MMData *dataToFind,
-                           MMDataSearchOptions mask,
-                           MMRange searchRange) {
+MMRange MMData_rangeOfData(const MMData *recv, MMData *dataToFind, MMDataSearchOptions mask, MMRange searchRange) {
 
     MMRange notFound = { MMNotFound, 0 };
 
-    if (data == NULL || dataToFind == NULL || data->buffer == NULL)
+    if (recv == NULL || dataToFind == NULL || recv->buffer == NULL)
         return notFound;
 
-    const unsigned char *haystack = (const unsigned char *)data->buffer;
-    size_t haystackLen = data->length;
+    const unsigned char *haystack = (const unsigned char *)recv->buffer;
+    size_t haystackLen = recv->length;
 
     const unsigned char *needle = (const unsigned char *)dataToFind->buffer;
     size_t needleLen = dataToFind->length;
@@ -102,11 +99,11 @@ MMRange MMData_rangeOfData(MMData *data,
     return notFound;
 }
 
-void MMData_release(MMData *data) {
-    if (!data) return;
-    free(data->buffer);
-    free(data);
-    data = nil;
+void MMData_release(MMData *recv) {
+    if (!recv) return;
+    free(recv->buffer);
+    free(recv);
+    recv = nil;
 }
 
 MMMutableData *MMMutableData_initWithCapacity(size_t size){
@@ -121,23 +118,22 @@ MMMutableData *MMMutableData_initWithContentsOfFile(MMString *path){
     return (MMMutableData *)MMData_initWithContentsOfFile(path);
 }
 
-void MMMutableData_appendBytes(MMMutableData * data, const void * bytes, MMUInteger length){
-    if (!data || !bytes || !length) return;
+void MMMutableData_appendBytes(MMMutableData * recv, const void * bytes, MMUInteger length){
+    if (!recv || !bytes || !length) return;
 
-    size_t originalLength = data->length;
-    size_t newLength = data->length + length;
-    data->buffer = realloc(data->buffer, newLength);      
+    size_t originalLength = recv->length;
+    size_t newLength = recv->length + length;
+    recv->buffer = realloc(recv->buffer, newLength);      
     
-    unsigned char *dst = (unsigned char *)data->buffer;
+    unsigned char *dst = (unsigned char *)recv->buffer;
     memcpy(dst + originalLength, bytes, length);
 
 }
 
-void MMMutableData_appendData(MMMutableData * data, MMData * other){
-    MMMutableData_appendBytes(data, other->buffer, other->length);
+void MMMutableData_appendData(MMMutableData * recv, MMData * other){
+    MMMutableData_appendBytes(recv, other->buffer, other->length);
 }
 
-
-void MMMutableData_release(MMMutableData *data) {
-    MMData_release(data);
+void MMMutableData_release(MMMutableData *recv) {
+    MMData_release(recv);
 }

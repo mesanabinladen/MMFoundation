@@ -12,8 +12,7 @@ typedef struct MMDate {
 } MMDate;
 
 MMDate * MMDate_init();
-MMTimeInterval MMDate_timeIntervalSinceDate(MMDate *date, MMDate *anotherDate);
+MMTimeInterval MMDate_timeIntervalSinceDate(const MMDate *recv, MMDate *anotherDate);
+void MMDate_release(MMDate * recv);
 
-void MMDate_release(MMDate *);
-
-#endif /* MMDATE_H */
+#endif /*MMDATE_H*/

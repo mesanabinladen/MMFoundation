@@ -1,6 +1,6 @@
 # MMFoundation
 
-This project is a small hobbyist attempt to build a C library that follows, as closely as possible, the data types and programming style of Apple’s Foundation framework.
+This project is a small hobbyist attempt to build a portable C library that follows, as closely as possible, the data types and programming style of Apple’s Foundation framework.
 
 The real goal (for me) is to learn C with a slightly complex project.
 
@@ -15,6 +15,8 @@ Similarly, features such as automatic reference counting are not be implemented 
 In short, this library is an experiment in creating a lightweight, portable Foundation-like toolkit for C, inspired by the design of Apple’s Objective-C APIs.
 
 For now, only the classes and methods strictly necessary for my own projects have been implemented. I am working on some more classes and methods, but anyone who wants to contribute, improve, or extend the library is more than welcome to do so.
+
+Additionally, I have also introduced some useful utility functions that didn't exist in the original Apple Foundation framework. These additions follow the same MM naming conventions and coding style to maintain consistency and familiarity with the rest of the library.
 
 The project license is described in the License file.
 

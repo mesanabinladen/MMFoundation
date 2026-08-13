@@ -17,20 +17,15 @@ typedef struct MMFileHandle {
 MMFileHandle *MMFileHandle_fileHandleForReadingAtPath(const MMString *path);
 MMFileHandle *MMFileHandle_fileHandleForWritingAtPath(const MMString *path);
 MMFileHandle *MMFileHandle_fileHandleForUpdatingAtPath(const MMString *path);
+void MMFileHandle_seekToFileOffset(const MMFileHandle *recv, off_t offset);
+off_t MMFileHandle_seekToEndOfFile(const MMFileHandle *recv);
+MMData *MMFileHandle_readDataOfLength(const MMFileHandle *recv, size_t length);
+MMData *MMfileHandle_readDataToEndOfFile(const MMFileHandle *recv);
+MMData * MMFileHandle_availableData(const MMFileHandle *recv);
+ssize_t MMFileHandle_writeData(MMFileHandle *recv, const MMData *data);
+void MMFileHandle_truncateFileAtOffset(MMFileHandle *recv, off_t offset);
+off_t MMFileHandle_offsetInFile(const MMFileHandle *recv);
+void MMFileHandle_synchronizeFile(MMFileHandle *recv);
+void MMFileHandle_closeFile(MMFileHandle *recv);
 
-void MMFileHandle_seekToFileOffset(MMFileHandle *handle, off_t offset);
-off_t MMFileHandle_seekToEndOfFile(MMFileHandle *handle);
-
-MMData *MMFileHandle_readDataOfLength(MMFileHandle *handle, size_t length);
-MMData *MMfileHandle_readDataToEndOfFile(MMFileHandle *handle);
-MMData * MMFileHandle_availableData(MMFileHandle *handle);
-
-ssize_t MMFileHandle_writeData(MMFileHandle *handle, const MMData *data);
-void MMFileHandle_truncateFileAtOffset(MMFileHandle *handle, off_t offset);
-
-off_t MMFileHandle_offsetInFile(MMFileHandle *handle);
-void MMFileHandle_synchronizeFile(MMFileHandle *handle);
-
-
-void MMFileHandle_closeFile(MMFileHandle *handle);
-#endif /* MMFILEHANDLE_H */
+#endif /*MMFILEHANDLE_H*/
