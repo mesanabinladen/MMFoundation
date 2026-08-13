@@ -49,7 +49,8 @@ typedef enum {
     MMTypeFileHandle,
     MMTypeString,
     MMTypeMutableString,
-    MMTypeNumber
+    MMTypeNumber,
+    MMTypeLock
 } ObjectTypes;
 
 typedef struct  {

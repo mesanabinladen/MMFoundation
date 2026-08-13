@@ -6,28 +6,31 @@
 #include "MMFileHandle.h"
 #include "MMString.h"
 #include "MMNumber.h"
-
+#include "MMLock.h"
 
 //autoreleasepool
-static int poolLevel = 0;
-static MMMutableArray * poolObjects = nil;
+MMMutableArray * pools = nil;
+MMMutableArray *actualPool = nil;
 
-void MMAutoreleasePool_init(){
-    if (poolObjects)
+void MMAutoreleasePool_init(){  
+    if (!pools)
     {
-        MMAutoreleasePool_drain();
+        pools=MMMutableArray_initWithCapacity(0);
     }
-    poolObjects = MMMutableArray_init();
-    //pool must be enabled AFTER the initialization!
-    poolLevel++;
+    actualPool = MMMutableArray_init();
+    MMMutableArray_addObject(pools, actualPool);
 }
 
 void MMAutoreleasePool_drain(){
-
-    MMMutableArray_release(poolObjects);
-    poolObjects = nil;
-    poolLevel--;
-    poolObjects = poolLevel>0 ? MMMutableArray_init() : nil;    
+    if (pools->count>0) {
+        size_t last_index = pools->count-1;
+        MMMutableArray_removeLastObject(pools);  
+        actualPool = pools->count > 0 ? pools->items[pools->count-1] : nil;
+    }
+    else{
+        printf("Error! Attempt to drain an empty pool\n");
+        exit(1);
+    }
 }
 
 //memory management
@@ -61,6 +64,9 @@ void * MM_init(int type){
         case (MMTypeNumber):
             voidPtr = malloc(sizeof(MMNumber));
             break;
+        case (MMTypeLock):
+            voidPtr = malloc(sizeof(MMNumber));
+            break;
         default:
             printf("Error initializig object type %i!\n", type);
             exit(1);
@@ -72,8 +78,8 @@ void * MM_init(int type){
     ObjectType * ptr = (ObjectType *)voidPtr;
     ptr->type = type;
     ptr->retainCount = 1;
-    if (poolLevel>0){
-        MMMutableArray_addObject(poolObjects, ptr);
+    if (actualPool){
+        MMMutableArray_addObject(actualPool, ptr);
     }
     return ptr;
 }
@@ -122,6 +128,10 @@ void * MM_copy(void * anObject){
             objSize = sizeof(MMNumber);
             //no subclassing of MM_copy!
             break;
+        case (MMTypeLock):
+            objSize = sizeof(MMLock);
+            //no subclassing of MM_copy!
+            break;
         default:
             printf("Error initializig object type %i!\n", ptr->type);
             exit(1);
@@ -133,7 +143,6 @@ void * MM_copy(void * anObject){
     }
     return newPtr;
 }
-
 
 void MM_release(void* anObject){
     if (anObject==nil) return;
@@ -171,7 +180,9 @@ void MM_release(void* anObject){
                 MMMutableString_release((MMMutableString *)ptr);
                 break;
             case (MMTypeNumber):
-                MMNumber_release((MMNumber *)ptr);     
+                MMNumber_release((MMNumber *)ptr);   
+            case (MMTypeLock):
+                MMLock_release((MMLock *)ptr);    
             default:
                 printf("Error releasing object type %i!\n", ptr->type);
                 exit(1);

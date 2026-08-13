@@ -127,7 +127,7 @@ void *MMArray_objectAtIndex(const MMArray *recv, size_t index) {
     return recv->items[index];
 }
 
-MMArray * MMArray_copy(MMArray * recv){
+MMArray * MMArray_copy(const MMArray * recv){
     if (!recv) return nil;
     ObjectType * ptr = (ObjectType *)recv;
     MMArray * newPtr = nil;
@@ -228,7 +228,26 @@ void MMMutableArray_replaceObjectAtIndex(const MMMutableArray *recv, MMUInteger 
     MM_retain(recv->items[index]);
 }
 
-MMMutableArray * MMMutableArray_copy(MMMutableArray * recv){
+void MMMutableArray_removeObjectAtIndex(MMMutableArray * recv, MMUInteger index){
+    if (!recv || index < 0 || index >= recv->count) return;
+
+    MM_release(MMArray_objectAtIndex(recv, index));
+    
+    for (int n=index+1; n< recv->count; n++)
+    {
+        recv->items[n-1]=recv->items[n];
+    }
+
+    size_t newCount = recv->count - 1;
+    recv->items = realloc(recv->items, newCount * sizeof(void*));
+    recv->count = newCount;
+}
+
+void MMMutableArray_removeLastObject(MMMutableArray * recv){
+    MMMutableArray_removeObjectAtIndex(recv, recv->count-1);
+}
+
+MMMutableArray * MMMutableArray_copy(const MMMutableArray * recv){
     return (MMMutableArray *) MMArray_copy(recv);
 }
 

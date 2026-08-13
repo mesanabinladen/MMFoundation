@@ -20,7 +20,7 @@ MMArray *MMArray_initWithCStringsArray(void *first, ...);
 MMArray *MMArray_initWithArray(MMArray * array, MMBool flag);
 size_t MMArray_count(const MMArray *recv);
 void *MMArray_objectAtIndex(const MMArray *recv, size_t index);
-MMArray * MMArray_copy(MMArray * recv);
+MMArray * MMArray_copy(const MMArray * recv);
 void MMArray_release(MMArray *recv);
 
 //MUTABLE ARRAY
@@ -35,7 +35,9 @@ size_t MMMutableArray_count(const MMMutableArray *recv);
 void * MMMutableArray_objectAtIndex(const MMMutableArray *recv, size_t index);
 void MMMutableArray_addObject(MMMutableArray * recv, void * anObject);
 void MMMutableArray_replaceObjectAtIndex(const MMMutableArray *recv, MMUInteger index, void* anObject);
-MMMutableArray * MMMutableArray_copy(MMMutableArray * recv);
+void MMMutableArray_removeObjectAtIndex(MMMutableArray * recv, MMUInteger index);
+void MMMutableArray_removeLastObject(MMMutableArray * recv);
+MMMutableArray * MMMutableArray_copy(const MMMutableArray * recv);
 void MMMutableArray_release(MMMutableArray *recv);
 
 #endif /*MMARRAY_H*/
