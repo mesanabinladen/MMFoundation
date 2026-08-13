@@ -22,7 +22,7 @@ MMData *MMData_initWithBytes(const void *bytes, size_t length){
 
 }
 MMData *MMData_initWithContentsOfFile(const MMString *path){
-    FILE *file = fopen(MMString_cString(path), "rb");
+    FILE *file = fopen(path->cString, "rb");
     if (!file) return NULL;
 
     fseek(file, 0, SEEK_END);
@@ -36,13 +36,18 @@ MMData *MMData_initWithContentsOfFile(const MMString *path){
     return data;
 }
 
+void MMData_getBytes(const MMData *recv, void * buffer , MMUInteger length){
+    if (!recv || !buffer) return; 
+    memcpy(buffer, recv->buffer, length);
+}
+
+
 MMData *MMData_dataUsingEncoding(const MMString * str, MMStringEncoding enc){
     //MMStringEncoding are not yet implemented!
-    return MMData_initWithBytes(str->cstring, str->length);
+    return MMData_initWithBytes(str->cString, str->length);
 }
 
 MMRange MMData_rangeOfData(const MMData *recv, MMData *dataToFind, MMDataSearchOptions mask, MMRange searchRange) {
-
     MMRange notFound = { MMNotFound, 0 };
 
     if (recv == NULL || dataToFind == NULL || recv->buffer == NULL)
@@ -99,6 +104,12 @@ MMRange MMData_rangeOfData(const MMData *recv, MMData *dataToFind, MMDataSearchO
     return notFound;
 }
 
+MMData *MMData_copy(MMData * recv){
+    if (!recv) return nil;
+    
+    return MMData_initWithBytes(recv->buffer, recv->length);
+}
+
 void MMData_release(MMData *recv) {
     if (!recv) return;
     free(recv->buffer);
@@ -118,6 +129,10 @@ MMMutableData *MMMutableData_initWithContentsOfFile(MMString *path){
     return (MMMutableData *)MMData_initWithContentsOfFile(path);
 }
 
+void MMutableData_getBytes(const MMMutableData *recv, void * buffer , MMUInteger length){
+    MMData_getBytes((MMData *)recv, buffer, length);
+}
+
 void MMMutableData_appendBytes(MMMutableData * recv, const void * bytes, MMUInteger length){
     if (!recv || !bytes || !length) return;
 
@@ -132,6 +147,10 @@ void MMMutableData_appendBytes(MMMutableData * recv, const void * bytes, MMUInte
 
 void MMMutableData_appendData(MMMutableData * recv, MMData * other){
     MMMutableData_appendBytes(recv, other->buffer, other->length);
+}
+
+MMMutableData *MMMutableData_copy(MMMutableData * recv){
+    return (MMMutableData *)MMData_copy(recv);
 }
 
 void MMMutableData_release(MMMutableData *recv) {

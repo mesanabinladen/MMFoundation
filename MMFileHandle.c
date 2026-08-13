@@ -3,9 +3,9 @@
 
 //private function to create a file if it doesn't exist
 MMFileHandle *getFileHandle(const MMString *path, int flags, int mode) {
-     if (!path || !path->cstring) return NULL;
+     if (!path || !path->cString) return NULL;
 
-    int fd = open(path->cstring, flags, mode);
+    int fd = open(path->cString, flags, mode);
     if (fd < 0) {
         return NULL;
     }

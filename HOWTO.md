@@ -44,8 +44,9 @@ Create and free `MMString` objects:
 
 ```c
 MMString *s = MMString_initWithCString("hello");
-const char *c = MMString_cString(s);
-MMString_release(s);
+const char *c = s->cString;
+MMString_release(s); // *c gest freed too
+
 ```
 
 Array helpers:

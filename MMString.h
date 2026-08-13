@@ -8,7 +8,6 @@
 MMString *MMString_initWithCString(const char *cString);
 MMString *MMString_initWithUTF8String(const char *nullTerminatedCString);
 MMString *MMString_initWithFormat(const char *format, ...);
-const char *MMString_cString(const MMString *recv);
 const char *MMString_cStringUsingEncoding(const MMString *recv, MMStringEncoding enc);
 MMString *MMString_stringByDeletingLastPathComponent(const MMString *recv);
 MMString *MMString_stringByAppendingString(const MMString *recv, const MMString *append);
@@ -31,14 +30,14 @@ MMString * MMString_substringFromIndex(const MMString * recv, MMUInteger from);
 MMString * MMString_substringToIndex(const MMString * recv, MMUInteger to);
 double MMString_doubleValue(const MMString * recv);
 long long MMString_longLongValue(const MMString * recv);
-
-/* Free the MMString */
+MMString *MMString_copy(MMString * recv);
 void MMString_release(MMString *recv);
 
 typedef MMString MMMutableString ;
 
 MMMutableString *MMMutableString_initWithCString(const char *str);
 void MMMutableString_appendString(MMMutableString *recv, MMString * aString);
+MMMutableString *MMMutableString_copy(MMMutableString * recv);
 void MMMutableString_release(MMMutableString *recv);
 
 #endif /*MMSTRING_H*/

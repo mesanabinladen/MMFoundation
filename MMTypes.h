@@ -61,7 +61,7 @@ typedef struct MMString {
     int type;
     int retainCount;
     //-------------
-    char *cstring;
+    char *cString;
     size_t length;
 } MMString;
 

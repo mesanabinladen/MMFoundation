@@ -96,6 +96,27 @@ MMArray *MMArray_initWithCStringsArray(void *first, ...) {
     return arr;
 }
 
+MMArray *MMArray_initWithArray(MMArray * array, MMBool flag){
+    MMArray *newArr = MM_init(MMTypeArray);
+
+    newArr->count = array->count;
+    newArr->items = malloc(newArr->count*sizeof(void *));
+    
+    if (flag){
+        for (int i=0; i<newArr->count; i++){
+            newArr->items[i] = MM_copy(array->items[i]); //each object in array receives a MM_copy() message to create a copy of the object. In a managed memory environment, this is instead of the retain message the object would otherwise receive. The object copy is then added to the returned array.
+        }
+    }
+    else{
+        memcpy(&newArr->items, &array->items, newArr->count);
+        for (int i=0; i<newArr->count; i++){
+            MM_retain(newArr->items[i]); //each object in array simply receives a retain message when it is added to the returned array.
+        }
+    }
+
+    return newArr;
+}
+
 size_t MMArray_count(const MMArray *recv) {
     return recv ? recv->count : 0;
 }
@@ -104,6 +125,25 @@ void *MMArray_objectAtIndex(const MMArray *recv, size_t index) {
     if (!recv) return nil;
     if (index >= recv->count) return nil;
     return recv->items[index];
+}
+
+MMArray * MMArray_copy(MMArray * recv){
+    if (!recv) return nil;
+    ObjectType * ptr = (ObjectType *)recv;
+    MMArray * newPtr = nil;
+
+    //allocate main struct
+    size_t objSize = sizeof(MMArray);;
+    newPtr = malloc(sizeof(objSize));
+    memcpy(newPtr, ptr, objSize);
+    newPtr->retainCount = 1;
+
+    //copy every single contained object
+    for (int i=0; i<newPtr->count;i++) {   
+        newPtr->items[i] = MM_copy(recv->items[i]);
+    }
+
+    return newPtr;
 }
 
 //release
@@ -155,6 +195,9 @@ MMMutableArray *MMMutableArray_initWithCStringsArray(void *first, ...) {
     return (MMMutableArray *)arr;
 }
 
+MMMutableArray *MMMutableArray_initWithArray(MMArray * array, MMBool flag){
+    return (MMMutableArray *)MMArray_initWithArray(array, flag);
+}
 size_t MMMutableArray_count(const MMMutableArray *recv) {
     return MMArray_count((MMArray *)recv);
 }
@@ -174,6 +217,10 @@ void MMMutableArray_addObject(MMMutableArray * recv, void * anObject){
     recv->items = newItems;
     recv->items[recv->count] = anObject;
     recv->count = newCount;
+}
+
+MMMutableArray * MMMutableArray_copy(MMMutableArray * recv){
+    return (MMMutableArray *) MMArray_copy(recv);
 }
 
 void MMMutableArray_release(MMMutableArray *recv) {

@@ -10,15 +10,15 @@ MMString * MMString_init(size_t capacity){
     MMString *str = MM_init(MMTypeString);
 
     if (capacity < 0) {
-        str->cstring = nil;
+        str->cString = nil;
     } 
     else{ //if capacity is zero, it means a nil terminated string!
-        str->cstring = malloc(capacity + 1);
-        if (!str->cstring) {
+        str->cString = malloc(capacity + 1);
+        if (!str->cString) {
             free(str);
             return nil;
         }
-        str->cstring[capacity] = '\0';
+        str->cString[capacity] = '\0';
     }  
     str->length = capacity;
 
@@ -26,11 +26,12 @@ MMString * MMString_init(size_t capacity){
 }
 
 MMString *MMString_initWithCString(const char *cString) {
+    if (!cString) return nil;
 
     size_t len = strlen(cString);
     MMString *newStr = MMString_init(len);
     if (!newStr) return nil;
-    strcpy(newStr->cstring, cString);
+    strcpy(newStr->cString, cString);
     return newStr;
 }
 
@@ -53,7 +54,7 @@ MMString *MMString_initWithFormat(const char *format, ...) {
     if (!newStr) return nil;
 
     va_start(args, format);
-    vsnprintf(newStr->cstring, (size_t)needed + 1, format, args);
+    vsnprintf(newStr->cString, (size_t)needed + 1, format, args);
     va_end(args);
 
     newStr->length = (size_t)needed;
@@ -61,9 +62,9 @@ MMString *MMString_initWithFormat(const char *format, ...) {
 }
 
 MMString *MMString_stringByDeletingLastPathComponent(const MMString *recv){
-    if (!recv || !recv->cstring) return nil;
+    if (!recv || !recv->cString) return nil;
 
-    char *lastSlash = strrchr(recv->cstring, MM_PATH_SEPARATOR);
+    char *lastSlash = strrchr(recv->cString, MM_PATH_SEPARATOR);
 
     if (!lastSlash) {
         // No slash found, return an empty string
@@ -71,11 +72,11 @@ MMString *MMString_stringByDeletingLastPathComponent(const MMString *recv){
         return newStr;
     }
 
-    size_t newLength = lastSlash - recv->cstring;
+    size_t newLength = lastSlash - recv->cString;
     MMString *newStr = MMString_init(newLength);
     if (!newStr) return nil;
 
-    strncpy(newStr->cstring, recv->cstring, newLength);
+    strncpy(newStr->cString, recv->cString, newLength);
 
     return newStr;
 }
@@ -87,8 +88,8 @@ MMString *MMString_stringByAppendingString(const MMString *recv, const MMString 
     MMString *newStr = MMString_init(newLength);
     if (!newStr) return nil;
 
-    strcpy(newStr->cstring, recv->cstring);
-    strcat(newStr->cstring, append->cstring);
+    strcpy(newStr->cString, recv->cString);
+    strcat(newStr->cString, append->cString);
     return newStr;
 }
 
@@ -99,34 +100,30 @@ MMString * MMString_stringByAppendingPathComponent(const MMString * recv, MMStri
     MMString *newStr = MMString_init(newLength);
     if (!newStr) return nil;
 
-    strcpy(newStr->cstring, recv->cstring);
+    strcpy(newStr->cString, recv->cString);
 
     char separator[2] = {MM_PATH_SEPARATOR, '\0'};
-    strcat(newStr->cstring, separator);
+    strcat(newStr->cString, separator);
 
-    strcat(newStr->cstring, str->cstring);
+    strcat(newStr->cString, str->cString);
     return newStr;
 }
 
 MMBool MMString_writeToFile(const MMString *recv, const MMString *path, MMBool atomically) {
-    if (!recv || !path || !recv->cstring || !path->cstring) return NO;
+    if (!recv || !path || !recv->cString || !path->cString) return NO;
 
-    FILE *file = fopen(path->cstring, atomically ? "w" : "w");
+    FILE *file = fopen(path->cString, atomically ? "w" : "w");
     if (!file) return NO;
 
-    size_t written = fwrite(recv->cstring, 1, recv->length, file);
+    size_t written = fwrite(recv->cString, 1, recv->length, file);
     fclose(file);
 
     return written == recv->length;
 }
 
-const char *MMString_cString(const MMString *recv) {
-    return recv ? recv->cstring : nil;
-}       
-
 const char *MMString_cStringUsingEncoding(const MMString *recv, MMStringEncoding enc){
     //MMStringEncoding are not yet implemented!
-    return MMString_cString(recv);
+    return recv->cString;
 }
 
 MMString * MMString_stringWithContentsOfFile(MMString * path, MMStringEncoding enc, MMError *error){
@@ -134,7 +131,7 @@ MMString * MMString_stringWithContentsOfFile(MMString * path, MMStringEncoding e
         printf("Error codes not implemented yet!");
         exit(1);
     }
-    if (!path || !path->cstring) return nil;
+    if (!path || !path->cString) return nil;
 
     MMData *data = MMData_initWithContentsOfFile(path);
     if (!data) return nil;
@@ -147,7 +144,7 @@ MMString * MMString_stringWithContentsOfFile(MMString * path, MMStringEncoding e
     }
 
     if (str->length > 0) {
-        memcpy(str->cstring, data->buffer, str->length);
+        memcpy(str->cString, data->buffer, str->length);
     }
 
     MMData_release(data);
@@ -155,7 +152,7 @@ MMString * MMString_stringWithContentsOfFile(MMString * path, MMStringEncoding e
 }
 
 MMArray * MMString_componentsSeparatedByString(const MMString * recv, MMString * separator){
-    if (!recv || !separator || !recv->cstring || !separator->cstring) return nil;
+    if (!recv || !separator || !recv->cString || !separator->cString) return nil;
     if (separator->length == 0) return nil;
 
     MMMutableArray *result = MMMutableArray_init(); //
@@ -166,7 +163,7 @@ MMArray * MMString_componentsSeparatedByString(const MMString * recv, MMString *
     while (start <= recv->length) {
         size_t found = MMNotFound;
         for (size_t i = start; i + sepLen <= recv->length; i++) {
-            if (memcmp(recv->cstring + i, separator->cstring, sepLen) == 0) {
+            if (memcmp(recv->cString + i, separator->cString, sepLen) == 0) {
                 found = i;
                 break;
             }
@@ -188,7 +185,7 @@ MMArray * MMString_componentsSeparatedByString(const MMString * recv, MMString *
             return nil;
         }
         if (partLen > 0) {
-            memcpy(part->cstring, recv->cstring + start, partLen);
+            memcpy(part->cString, recv->cString + start, partLen);
         }
         part->retainCount = 0; //we don't need to retain 2 times the temporary object
         MMMutableArray_addObject(result, part);
@@ -205,10 +202,10 @@ MMArray * MMString_componentsSeparatedByString(const MMString * recv, MMString *
 //This property is 0 if the string doesn’t begin with a valid decimal text representation of a number.
 MMInteger MMString_integerValue(const MMString *recv) {
     char *end;
-    if (recv->cstring[0] == '\0' || recv->cstring[0] == ' ')
+    if (recv->cString[0] == '\0' || recv->cString[0] == ' ')
         return 0;
     errno = 0;
-    long l = strtol(recv->cstring, &end, 10);
+    long l = strtol(recv->cString, &end, 10);
     /* Both checks are needed because INT_MAX == LONG_MAX is possible. */
     if (l > INT_MAX || (errno == ERANGE && l == LONG_MAX))
         return 0;
@@ -223,17 +220,17 @@ MMRange MMString_rangeOfString(const MMString *recv, MMString *searchString) {
 
     MMRange notFound = { MMNotFound, 0 };
 
-    if (recv == nil || searchString == nil || recv->cstring == nil) return notFound;
+    if (recv == nil || searchString == nil || recv->cString == nil) return notFound;
 
-    return MMString_rangeOfCString(recv, searchString->cstring);
+    return MMString_rangeOfCString(recv, searchString->cString);
 }
 
 MMRange MMString_rangeOfCString(const MMString *recv, const char * str){
     MMRange notFound = { MMNotFound, 0 };
 
-    if (recv == nil || str == nil || recv->cstring == nil) return notFound;
+    if (recv == nil || str == nil || recv->cString == nil) return notFound;
 
-    const unsigned char *haystack = (const unsigned char *)recv->cstring;
+    const unsigned char *haystack = (const unsigned char *)recv->cString;
     size_t haystackLen = recv->length;
 
     const unsigned char *needle = (const unsigned char *)str;
@@ -251,11 +248,11 @@ MMRange MMString_rangeOfCString(const MMString *recv, const char * str){
 
 
 MMUInteger MMString_hash(const MMString *recv){
-    if (!recv || !recv->cstring) return 0;
+    if (!recv || !recv->cString) return 0;
 
     MMUInteger h = 2166136261u;
     
-    char *s =recv->cstring;
+    char *s =recv->cString;
 
     while (*s) {
         h ^= (unsigned char)*s++;
@@ -265,15 +262,15 @@ MMUInteger MMString_hash(const MMString *recv){
 }
 
 MMBool MMString_isEqualToString(const MMString *recv, MMString * aString){
-    if (!aString || !(aString->cstring) || recv->length!=aString->length) return NO;
+    if (!aString || !(aString->cString) || recv->length!=aString->length) return NO;
 
-    return MMString_isEqualToCString(recv, aString->cstring);
+    return MMString_isEqualToCString(recv, aString->cString);
 }
 
 MMBool MMString_isEqualToCString(const MMString *recv, const char * str){
-    if (!recv || !(recv->cstring) || !str) return NO;
+    if (!recv || !(recv->cString) || !str) return NO;
 
-    return strcmp(recv->cstring, str)==0;
+    return strcmp(recv->cString, str)==0;
 }
 
 MMUInteger MSString_lengthOfBytesUsingEncoding(const MMString *recv, MMStringEncoding enc){
@@ -282,7 +279,7 @@ MMUInteger MSString_lengthOfBytesUsingEncoding(const MMString *recv, MMStringEnc
 }
 
 MMString *MMString_stringByReplacingOccurrencesOfString(const MMString *recv, MMString *target, MMString *replacement){
-    if (!recv || !target || !target->cstring || target->length == 0) return nil ;
+    if (!recv || !target || !target->cString || target->length == 0) return nil ;
 
     size_t srcLen = recv->length;
     size_t needleLen = target->length;
@@ -291,7 +288,7 @@ MMString *MMString_stringByReplacingOccurrencesOfString(const MMString *recv, MM
     // First pass: count occurrences to compute new length
     size_t count = 0;
     for (size_t i = 0; i + needleLen <= srcLen; ) {
-        if (memcmp(recv->cstring + i, target->cstring, needleLen) == 0) {
+        if (memcmp(recv->cString + i, target->cString, needleLen) == 0) {
             count++;
             i += needleLen;
         } else {
@@ -303,7 +300,7 @@ MMString *MMString_stringByReplacingOccurrencesOfString(const MMString *recv, MM
         // No replacement needed: return copy of original
         MMString *copy = MMString_init(srcLen);
         if (!copy) return nil ;
-        if (srcLen) memcpy(copy->cstring, recv->cstring, srcLen);
+        if (srcLen) memcpy(copy->cString, recv->cString, srcLen);
         return copy;
     }
 
@@ -314,12 +311,12 @@ MMString *MMString_stringByReplacingOccurrencesOfString(const MMString *recv, MM
     // Second pass: build output
     size_t ri = 0;
     for (size_t i = 0; i < srcLen; ) {
-        if (i + needleLen <= srcLen && memcmp(recv->cstring + i, target->cstring, needleLen) == 0) {
-            if (replLen > 0) memcpy(out->cstring + ri, replacement->cstring, replLen);
+        if (i + needleLen <= srcLen && memcmp(recv->cString + i, target->cString, needleLen) == 0) {
+            if (replLen > 0) memcpy(out->cString + ri, replacement->cString, replLen);
             ri += replLen;
             i += needleLen;
         } else {
-            out->cstring[ri++] = recv->cstring[i++];
+            out->cString[ri++] = recv->cString[i++];
         }
     }
 
@@ -329,48 +326,40 @@ MMString *MMString_stringByReplacingOccurrencesOfString(const MMString *recv, MM
 
 const char * MMString_fileSystemRepresentation(const MMString *recv){
     //TODO: implement true checks!
-    return recv->cstring;
-}
-
-//release
-void MMString_release(MMString *recv) {
-    if (!recv) return;
-    free(recv->cstring);
-    free(recv);
-    recv = nil;
+    return recv->cString;
 }
 
 MMBool MMString_getCString(const MMString *recv, char * buffer, MMUInteger maxBufferCount, MMStringEncoding encoding){
     //MMStringEncoding are not yet implemented!
-    if (!recv || !recv->cstring || !buffer || maxBufferCount == 0) return NO;
+    if (!recv || !recv->cString || !buffer || maxBufferCount == 0) return NO;
 
     if (maxBufferCount > recv->length) {
         buffer[0] = '\0';
         return NO;
     }
 
-    memcpy(buffer, recv->cstring, maxBufferCount);
+    memcpy(buffer, recv->cString, maxBufferCount);
     buffer[maxBufferCount] = '\0';
 
     return YES;
 }
 
 MMBool MMString_hasSuffix(const MMString * recv, MMString * str){
-    if (recv == nil || str == nil || recv->cstring == nil) return NO;
+    if (recv == nil || str == nil || recv->cString == nil) return NO;
     
     size_t suffixLength = str->length;
     size_t haystackLen = recv->length;
 
-    return strcmp(recv->cstring + haystackLen - suffixLength, str->cstring)==0;
+    return strcmp(recv->cString + haystackLen - suffixLength, str->cString)==0;
 }
 
 MMString * MMString_substringFromIndex(const MMString * recv, MMUInteger from){
-     if (recv == nil || recv->cstring == nil) return nil;
-    return MMString_initWithCString(&recv->cstring[from]);
+     if (recv == nil || recv->cString == nil) return nil;
+    return MMString_initWithCString(&recv->cString[from]);
 }
 
 MMString * MMString_substringToIndex(const MMString * recv, MMUInteger to){
-     if (recv == nil || recv->cstring == nil) return nil;
+     if (recv == nil || recv->cString == nil) return nil;
 
     if (to > recv->length) to = recv->length;
     
@@ -378,7 +367,7 @@ MMString * MMString_substringToIndex(const MMString * recv, MMUInteger to){
     if (!newStr) return nil;
     
     if (to > 0) {
-        memcpy(newStr->cstring, recv->cstring, to);
+        memcpy(newStr->cString, recv->cString, to);
     }
     
     return newStr;
@@ -395,14 +384,14 @@ void trimTrailingNewLine(char *str){
 }
 
 double MMString_doubleValue(const MMString * recv){
-    if (!recv || !recv->cstring) return 0.0;
+    if (!recv || !recv->cString) return 0.0;
     
     char *end;
-    if (recv->cstring[0] == '\0' || recv->cstring[0] == ' ')
+    if (recv->cString[0] == '\0' || recv->cString[0] == ' ')
         return 0.0;
     errno = 0;
-    trimTrailingNewLine(recv->cstring);
-    double d = strtod(recv->cstring, &end);
+    trimTrailingNewLine(recv->cString);
+    double d = strtod(recv->cString, &end);
     
     if (errno == ERANGE)
         return 0.0;
@@ -413,15 +402,15 @@ double MMString_doubleValue(const MMString * recv){
 }
 
 long long MMString_longLongValue(const MMString * recv){
-    if (!recv || !recv->cstring) return 0;
+    if (!recv || !recv->cString) return 0;
     
     char *end;
-    if (recv->cstring[0] == '\0' || recv->cstring[0] == ' ')
+    if (recv->cString[0] == '\0' || recv->cString[0] == ' ')
         return 0;
     errno = 0;
 
-    trimTrailingNewLine(recv->cstring);
-    long long d = strtoll(recv->cstring, &end, 10);
+    trimTrailingNewLine(recv->cString);
+    long long d = strtoll(recv->cString, &end, 10);
     
     if (errno == ERANGE)
         return 0;
@@ -431,6 +420,20 @@ long long MMString_longLongValue(const MMString * recv){
     return d;
 }
 
+MMString *MMString_copy(MMString * recv){
+    if (!recv) return nil;
+    
+    return MMString_initWithCString(recv->cString);
+}
+
+
+//release
+void MMString_release(MMString *recv) {
+    if (!recv) return;
+    free(recv->cString);
+    free(recv);
+    recv = nil;
+}
 
 //-----MUTABLE STRING
 MMMutableString *MMMutableString_initWithCString(const char *str){
@@ -442,13 +445,16 @@ void MMMutableString_appendString(MMMutableString *recv, MMString * aString){
 
     size_t originalLength = recv->length;
     size_t newLength = recv->length + aString->length;//added string terminator!
-    recv->cstring = realloc(recv->cstring, newLength + 1);      
+    recv->cString = realloc(recv->cString, newLength + 1);      
         
-    memcpy(&recv->cstring[originalLength], aString->cstring, aString->length);
-    recv->cstring[newLength]='\0';
+    memcpy(&recv->cString[originalLength], aString->cString, aString->length);
+    recv->cString[newLength]='\0';
     recv->length=newLength;
 }
 
+MMMutableString *MMMutableString_copy(MMMutableString * recv){
+    return (MMMutableString *)MMString_copy(recv);
+}
 void MMMutableString_release(MMMutableString *recv){
     MMString_release((MMString *)recv);
 }

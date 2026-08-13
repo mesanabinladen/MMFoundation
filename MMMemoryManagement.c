@@ -84,6 +84,57 @@ void * MM_retain(void* anObject){
     return ptr;
 }
 
+void * MM_copy(void * anObject){
+    if (!anObject) return nil;
+
+    ObjectType * ptr = (ObjectType *)anObject;
+    void * newPtr = nil;
+
+    size_t objSize = 0;
+    switch (ptr->type) {
+         case (MMTypeArray):
+            newPtr = MMArray_copy((MMArray *) ptr);
+            break;
+        case (MMTypeMutableArray):
+            newPtr = MMMutableArray_copy((MMMutableArray *) ptr);
+            break;
+        case (MMTypeData):
+            newPtr = MMData_copy((MMData *) ptr);
+            break;
+        case (MMTypeMutableData):
+            newPtr = MMMutableData_copy((MMMutableData *) ptr);
+            break;
+        case (MMTypeDate):
+            objSize = sizeof(MMDate);
+            //no subclassing of MM_copy!
+            break;
+        case (MMTypeFileHandle):
+            objSize = sizeof(MMFileHandle);
+            //no subclassing of MM_copy!
+            break;
+        case (MMTypeString):
+            newPtr = MMString_copy((MMString *) ptr);
+            break;
+        case (MMTypeMutableString):
+            newPtr = MMMutableString_copy((MMMutableString *) ptr);
+            break;
+        case (MMTypeNumber):
+            objSize = sizeof(MMNumber);
+            //no subclassing of MM_copy!
+            break;
+        default:
+            printf("Error initializig object type %i!\n", ptr->type);
+            exit(1);
+    }
+    if (newPtr==nil){ //for simple objects with no subclassing of MM_copy...
+        newPtr = malloc(sizeof(objSize));
+        memcpy(newPtr, ptr, objSize);
+        ((ObjectType *)newPtr)->retainCount = 1;
+    }
+    return newPtr;
+}
+
+
 void MM_release(void* anObject){
     if (anObject==nil) return;
     ObjectType * ptr = (ObjectType *)anObject;

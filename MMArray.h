@@ -17,8 +17,10 @@ typedef struct MMArray {
 MMArray *MMArray_init(void);
 MMArray *MMArray_initWithObjects(void *first, ...);
 MMArray *MMArray_initWithCStringsArray(void *first, ...);
+MMArray *MMArray_initWithArray(MMArray * array, MMBool flag);
 size_t MMArray_count(const MMArray *recv);
 void *MMArray_objectAtIndex(const MMArray *recv, size_t index);
+MMArray * MMArray_copy(MMArray * recv);
 void MMArray_release(MMArray *recv);
 
 //MUTABLE ARRAY
@@ -27,10 +29,12 @@ typedef MMArray MMMutableArray;
 MMMutableArray *MMMutableArray_init(void);
 MMMutableArray *MMMutableArray_initWithCapacity(size_t length);
 MMMutableArray *MMMutableArray_initWithObjects(void *first, ...);
-MMMutableArray *MMMutableArrayinitWithCStringsArray(void *first, ...);
+MMMutableArray *MMMutableArray_initWithCStringsArray(void *first, ...);
+MMMutableArray *MMMutableArray_initWithArray(MMArray * array, MMBool flag);
 size_t MMMutableArray_count(const MMMutableArray *recv);
 void * MMMutableArray_objectAtIndex(const MMMutableArray *recv, size_t index);
 void MMMutableArray_addObject(MMMutableArray * recv, void * anObject);
+MMMutableArray * MMMutableArray_copy(MMMutableArray * recv);
 void MMMutableArray_release(MMMutableArray *recv);
 
 #endif /*MMARRAY_H*/
