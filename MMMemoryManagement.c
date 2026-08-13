@@ -9,7 +9,7 @@
 
 
 //autoreleasepool
-static MMBool poolExists = NO;
+static int poolLevel = 0;
 static MMMutableArray * poolObjects = nil;
 
 void MMAutoreleasePool_init(){
@@ -19,14 +19,15 @@ void MMAutoreleasePool_init(){
     }
     poolObjects = MMMutableArray_init();
     //pool must be enabled AFTER the initialization!
-    poolExists=YES;
+    poolLevel++;
 }
 
 void MMAutoreleasePool_drain(){
 
     MMMutableArray_release(poolObjects);
     poolObjects = nil;
-    poolExists = NO;
+    poolLevel--;
+    poolObjects = poolLevel>0 ? MMMutableArray_init() : nil;    
 }
 
 //memory management
@@ -71,8 +72,7 @@ void * MM_init(int type){
     ObjectType * ptr = (ObjectType *)voidPtr;
     ptr->type = type;
     ptr->retainCount = 1;
-    if (poolExists)
-    {
+    if (poolLevel>0){
         MMMutableArray_addObject(poolObjects, ptr);
     }
     return ptr;

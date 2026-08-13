@@ -93,10 +93,16 @@ MMString *MMString_stringByAppendingString(const MMString *recv, const MMString 
     return newStr;
 }
 
-MMString * MMString_stringByAppendingPathComponent(const MMString * recv, MMString *str){
+MMString * MMString_stringByAppendingPathComponent(const MMString *recv, MMString *str){
+     if (!recv || !str) return nil;
+    return MMString_stringByAppendingCPathComponent(recv, str->cString);
+}
+
+MMString * MMString_stringByAppendingCPathComponent(const MMString *recv, char *str){
      if (!recv || !str) return nil;
 
-    size_t newLength = recv->length + str->length + 1; //+ 1 for separator
+    size_t strLength = strlen(str);
+    size_t newLength = recv->length + strLength + 1; //+ 1 for separator
     MMString *newStr = MMString_init(newLength);
     if (!newStr) return nil;
 
@@ -105,7 +111,7 @@ MMString * MMString_stringByAppendingPathComponent(const MMString * recv, MMStri
     char separator[2] = {MM_PATH_SEPARATOR, '\0'};
     strcat(newStr->cString, separator);
 
-    strcat(newStr->cString, str->cString);
+    strcat(newStr->cString, str);
     return newStr;
 }
 
@@ -383,20 +389,21 @@ void trimTrailingNewLine(char *str){
     
 }
 
-double MMString_doubleValue(const MMString * recv){
-    if (!recv || !recv->cString) return 0.0;
+long MMString_longValue(const MMString * recv){
+    if (!recv || !recv->cString) return 0;
     
     char *end;
     if (recv->cString[0] == '\0' || recv->cString[0] == ' ')
-        return 0.0;
+        return 0;
     errno = 0;
+
     trimTrailingNewLine(recv->cString);
-    double d = strtod(recv->cString, &end);
+    long d = strtol(recv->cString, &end, 10);
     
     if (errno == ERANGE)
-        return 0.0;
+        return 0;
     if (*end != '\0')
-        return 0.0;
+        return 0;
     
     return d;
 }
@@ -416,6 +423,24 @@ long long MMString_longLongValue(const MMString * recv){
         return 0;
     if (*end != '\0')
         return 0;
+    
+    return d;
+}
+
+double MMString_doubleValue(const MMString * recv){
+    if (!recv || !recv->cString) return 0.0;
+    
+    char *end;
+    if (recv->cString[0] == '\0' || recv->cString[0] == ' ')
+        return 0.0;
+    errno = 0;
+    trimTrailingNewLine(recv->cString);
+    double d = strtod(recv->cString, &end);
+    
+    if (errno == ERANGE)
+        return 0.0;
+    if (*end != '\0')
+        return 0.0;
     
     return d;
 }

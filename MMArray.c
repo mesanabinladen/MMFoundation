@@ -219,6 +219,16 @@ void MMMutableArray_addObject(MMMutableArray * recv, void * anObject){
     recv->count = newCount;
 }
 
+void MMMutableArray_replaceObjectAtIndex(const MMMutableArray *recv, MMUInteger index, void* anObject){
+    if (!recv || index < 0 || !anObject) return;
+    if (index> recv->count) return;
+    
+    //replace object
+    MM_release(recv->items[index]);
+    recv->items[index] = anObject;
+    MM_retain(recv->items[index]);
+}
+
 MMMutableArray * MMMutableArray_copy(MMMutableArray * recv){
     return (MMMutableArray *) MMArray_copy(recv);
 }

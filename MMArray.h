@@ -34,6 +34,7 @@ MMMutableArray *MMMutableArray_initWithArray(MMArray * array, MMBool flag);
 size_t MMMutableArray_count(const MMMutableArray *recv);
 void * MMMutableArray_objectAtIndex(const MMMutableArray *recv, size_t index);
 void MMMutableArray_addObject(MMMutableArray * recv, void * anObject);
+void MMMutableArray_replaceObjectAtIndex(const MMMutableArray *recv, MMUInteger index, void* anObject);
 MMMutableArray * MMMutableArray_copy(MMMutableArray * recv);
 void MMMutableArray_release(MMMutableArray *recv);
 
