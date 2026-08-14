@@ -9,17 +9,14 @@
 MMString * MMString_init(size_t capacity){
     MMString *str = MM_init(MMTypeString);
 
-    if (capacity < 0) {
-        str->cString = nil;
-    } 
-    else{ //if capacity is zero, it means a nil terminated string!
-        str->cString = malloc(capacity + 1);
-        if (!str->cString) {
-            free(str);
-            return nil;
-        }
-        str->cString[capacity] = '\0';
-    }  
+ //if capacity is zero, it means a nil terminated string!
+    str->cString = malloc(capacity + 1);
+    if (!str->cString) {
+        free(str);
+        return nil;
+    }
+    str->cString[capacity] = '\0';
+    
     str->length = capacity;
 
     return str;

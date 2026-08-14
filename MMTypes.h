@@ -12,6 +12,7 @@
 #include <sys/time.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <unistd.h>
 
 #include "MMMemoryManagement.h"
 
@@ -22,7 +23,6 @@
 #else
     #define MM_PATH_SEPARATOR (char)'/'
     #define MMNotFound  (UINT32_MAX-1) //32 bit on posix
-    #include <unistd.h>
 #endif 
 
 #define YES 1

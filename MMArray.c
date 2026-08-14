@@ -133,8 +133,8 @@ MMArray * MMArray_copy(const MMArray * recv){
     MMArray * newPtr = nil;
 
     //allocate main struct
-    size_t objSize = sizeof(MMArray);;
-    newPtr = malloc(sizeof(objSize));
+    size_t objSize = sizeof(MMArray);
+    newPtr = malloc(objSize);
     memcpy(newPtr, ptr, objSize);
     newPtr->retainCount = 1;
 
@@ -219,7 +219,7 @@ void MMMutableArray_addObject(MMMutableArray * recv, void * anObject){
 }
 
 void MMMutableArray_replaceObjectAtIndex(const MMMutableArray *recv, MMUInteger index, void* anObject){
-    if (!recv || index < 0 || !anObject) return;
+    if (!recv || !anObject) return;
     if (index> recv->count) return;
     
     //replace object
@@ -229,7 +229,7 @@ void MMMutableArray_replaceObjectAtIndex(const MMMutableArray *recv, MMUInteger 
 }
 
 void MMMutableArray_removeObjectAtIndex(MMMutableArray * recv, MMUInteger index){
-    if (!recv || index < 0 || index >= recv->count) return;
+    if (!recv || index >= recv->count) return;
 
     MM_release(MMArray_objectAtIndex(recv, index));
     

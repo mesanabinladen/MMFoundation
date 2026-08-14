@@ -202,8 +202,8 @@ void MM_release(void* anObject){
                 MMNumber_release((MMNumber *)ptr);  
                 break; 
             case (MMTypeLock):
+                MMLock_release((MMLock *)ptr);
                 break;
-                MMLock_release((MMLock *)ptr);    
             case (MMTypeURLRequest):
                 MMURLRequest_release((MMURLRequest *)ptr);  
                 break;

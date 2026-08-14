@@ -26,7 +26,7 @@ static void set_error(MMError **error, int code, const char *msg)
 #include <winhttp.h>
 #pragma comment(lib, "winhttp.lib")
 
-static MMMutableData *send_with_winhttp(MMURLRequest *request,
+static MMData *send_with_winhttp(MMURLRequest *request,
                                  MMHTTPURLResponse **response,
                                  MMError **error)
 {
@@ -36,13 +36,13 @@ static MMMutableData *send_with_winhttp(MMURLRequest *request,
     }
 
     // Converti URL in wide string
-    int wlen = MultiByteToWideChar(CP_UTF8, 0, request->url, -1, nil, 0);
+    int wlen = MultiByteToWideChar(CP_UTF8, 0, request->URL->url->cString, -1, nil, 0);
     wchar_t *wurl = malloc(wlen * sizeof(wchar_t));
     if (!wurl) {
         set_error(error, -1, "Out of memory");
         return nil;
     }
-    MultiByteToWideChar(CP_UTF8, 0, request->url, -1, wurl, wlen);
+    MultiByteToWideChar(CP_UTF8, 0, request->URL->url->cString, -1, wurl, wlen);
 
     URL_COMPONENTS uc = {0};
     uc.dwStructSize = sizeof(uc);
@@ -159,7 +159,7 @@ static MMMutableData *send_with_winhttp(MMURLRequest *request,
     WinHttpCloseHandle(hSession);
 
     if (response) {
-        *response = calloc(1, sizeof(MMURLResponse));
+        *response = MMHTTPURLResponse_init();
         if (*response) {
             (*response)->statusCode = (long)statusCode;
             (*response)->url = MMURL_copy(request->URL);
