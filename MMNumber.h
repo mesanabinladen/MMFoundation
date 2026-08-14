@@ -38,6 +38,5 @@ MMNumber * MMNumber_numberWithUnsignedLong(unsigned long value);
 MMNumber * MMNumber_numberWithUnsignedLongLong(unsigned long long value);
 MMNumber * MMNumber_numberWithFloat(float value);
 MMNumber * MMNumber_numberWithDouble(double value);
-void MMNumber_release(MMNumber * n);
 
 #endif /*MMNUMBER_h*/

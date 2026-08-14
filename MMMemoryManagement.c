@@ -1,12 +1,8 @@
 #include "MMMemoryManagement.h"
 
-#include "MMArray.h"
-#include "MMData.h"
-#include "MMDate.h"
-#include "MMFileHandle.h"
-#include "MMString.h"
-#include "MMNumber.h"
-#include "MMLock.h"
+#include "MMFoundation.h"
+
+#include "MMReleases.h"
 
 //autoreleasepool
 MMMutableArray * pools = nil;
@@ -23,7 +19,6 @@ void MMAutoreleasePool_init(){
 
 void MMAutoreleasePool_drain(){
     if (pools->count>0) {
-        size_t last_index = pools->count-1;
         MMMutableArray_removeLastObject(pools);  
         actualPool = pools->count > 0 ? pools->items[pools->count-1] : nil;
     }
@@ -65,7 +60,19 @@ void * MM_init(int type){
             voidPtr = malloc(sizeof(MMNumber));
             break;
         case (MMTypeLock):
-            voidPtr = malloc(sizeof(MMNumber));
+            voidPtr = malloc(sizeof(MMLock));
+            break;
+        case (MMTypeURLRequest):
+            voidPtr = malloc(sizeof(MMURLRequest));
+            break;
+        case (MMTypeURL):
+            voidPtr = malloc(sizeof(MMURL));
+            break;
+        case (MMTypeHTTPURLResponse):
+            voidPtr = malloc(sizeof(MMHTTPURLResponse));
+            break;
+        case (MMTypeError):
+            voidPtr = malloc(sizeof(MMError));
             break;
         default:
             printf("Error initializig object type %i!\n", type);
@@ -132,6 +139,18 @@ void * MM_copy(void * anObject){
             objSize = sizeof(MMLock);
             //no subclassing of MM_copy!
             break;
+        case (MMTypeURLRequest):
+            newPtr = MMURLRequest_copy((MMURLRequest *) ptr);
+            break;
+        case (MMTypeURL):
+            newPtr = MMURL_copy((MMURL *) ptr);
+            break;
+        case (MMTypeHTTPURLResponse):
+            newPtr = MMTTPURLResponse_copy((MMHTTPURLResponse *) ptr);
+            break;
+        case (MMTypeError):
+            newPtr = MMError_copy((MMError *) ptr);
+            break;
         default:
             printf("Error initializig object type %i!\n", ptr->type);
             exit(1);
@@ -180,9 +199,23 @@ void MM_release(void* anObject){
                 MMMutableString_release((MMMutableString *)ptr);
                 break;
             case (MMTypeNumber):
-                MMNumber_release((MMNumber *)ptr);   
+                MMNumber_release((MMNumber *)ptr);  
+                break; 
             case (MMTypeLock):
+                break;
                 MMLock_release((MMLock *)ptr);    
+            case (MMTypeURLRequest):
+                MMURLRequest_release((MMURLRequest *)ptr);  
+                break;
+            case (MMTypeURL):
+                MMURL_release((MMURL *)ptr);  
+                break;
+            case (MMTypeHTTPURLResponse):
+                MMHTTPURLResponse_release((MMHTTPURLResponse *)ptr);
+                break;
+            case (MMTypeError):
+                MMError_release((MMError *) ptr);
+                break;
             default:
                 printf("Error releasing object type %i!\n", ptr->type);
                 exit(1);

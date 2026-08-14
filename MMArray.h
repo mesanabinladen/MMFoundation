@@ -21,7 +21,6 @@ MMArray *MMArray_initWithArray(MMArray * array, MMBool flag);
 size_t MMArray_count(const MMArray *recv);
 void *MMArray_objectAtIndex(const MMArray *recv, size_t index);
 MMArray * MMArray_copy(const MMArray * recv);
-void MMArray_release(MMArray *recv);
 
 //MUTABLE ARRAY
 typedef MMArray MMMutableArray;
@@ -38,6 +37,5 @@ void MMMutableArray_replaceObjectAtIndex(const MMMutableArray *recv, MMUInteger 
 void MMMutableArray_removeObjectAtIndex(MMMutableArray * recv, MMUInteger index);
 void MMMutableArray_removeLastObject(MMMutableArray * recv);
 MMMutableArray * MMMutableArray_copy(const MMMutableArray * recv);
-void MMMutableArray_release(MMMutableArray *recv);
 
 #endif /*MMARRAY_H*/

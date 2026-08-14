@@ -43,6 +43,7 @@ void MMData_getBytes(const MMData *recv, void * buffer , MMUInteger length){
 
 
 MMData *MMData_dataUsingEncoding(const MMString * str, MMStringEncoding enc){
+    (void)enc;
     //MMStringEncoding are not yet implemented!
     return MMData_initWithBytes(str->cString, str->length);
 }

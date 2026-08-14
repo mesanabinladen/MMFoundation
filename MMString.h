@@ -1,16 +1,20 @@
 #ifndef MMSTRING_H
 #define MMSTRING_H
 
-#include <stddef.h>
 #include "MMTypes.h"
+
+#include "MMData.h"
+#include "MMError.h"
 #include "MMArray.h"
 
 MMString *MMString_initWithCString(const char *cString);
 MMString *MMString_initWithUTF8String(const char *nullTerminatedCString);
 MMString *MMString_initWithFormat(const char *format, ...);
+MMString *MMString_initWithData(MMData *data, MMStringEncoding encoding);
 const char *MMString_cStringUsingEncoding(const MMString *recv, MMStringEncoding enc);
 MMString *MMString_stringByDeletingLastPathComponent(const MMString *recv);
 MMString *MMString_stringByAppendingString(const MMString *recv, const MMString *append);
+MMString *MMString_stringByAppendingCString(const MMString *recv, const char *append);
 MMString *MMString_stringByAppendingPathComponent(const MMString *recv, MMString *str);
 MMString *MMString_stringByAppendingCPathComponent(const MMString *recv, char *str);
 MMBool MMString_writeToFile(const MMString *recv, const MMString *path, MMBool useAuxiliaryFile);
@@ -24,6 +28,7 @@ MMBool MMString_isEqualToString(const MMString *recv, MMString * aString);
 MMBool MMString_isEqualToCString(const MMString *recv, const char *str);
 MMUInteger MSString_lengthOfBytesUsingEncoding(const MMString *recv, MMStringEncoding enc);
 MMString *MMString_stringByReplacingOccurrencesOfString(const MMString *recv, MMString *target, MMString *replacement);
+MMString *MMString_stringByReplacingOccurrencesOfCString(const MMString *recv, char *target, char *replacement);
 MMBool MMString_getCString(const MMString *recv, char *buffer, MMUInteger maxBufferCount, MMStringEncoding encoding);
 const char *MMString_fileSystemRepresentation(const MMString *recv);
 MMBool MMString_hasSuffix(const MMString *recv, MMString *str);
@@ -33,13 +38,12 @@ long MMString_longValue(const MMString *recv);
 long long MMString_longLongValue(const MMString *recv);
 double MMString_doubleValue(const MMString *recv);
 MMString *MMString_copy(MMString *recv);
-void MMString_release(MMString *recv);
 
 typedef MMString MMMutableString ;
 
 MMMutableString *MMMutableString_initWithCString(const char *str);
+MMMutableString *MMMutableString_initWithData(MMData *data, MMStringEncoding encoding);
 void MMMutableString_appendString(MMMutableString *recv, MMString * aString);
 MMMutableString *MMMutableString_copy(MMMutableString * recv);
-void MMMutableString_release(MMMutableString *recv);
 
 #endif /*MMSTRING_H*/

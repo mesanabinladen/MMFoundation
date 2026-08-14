@@ -2,7 +2,6 @@
 #define MMFOUNDATION_H
 
 #include "MMError.h"
-#include "MMTypes.h"
 #include "MMFileHandle.h"
 #include "MMString.h"
 #include "MMMemoryManagement.h"
@@ -12,5 +11,8 @@
 #include "MMNumber.h"
 #include "MMRange.h"
 #include "MMLock.h"
+#include "MMURLRequest.h"
+#include "MMURL.h"
+#include "MMURLConnection.h"
 
 #endif /* MMFOUNDATION_H */

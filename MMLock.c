@@ -1,7 +1,7 @@
 #include "MMLock.h"
 
 MMLock * MMLock_init(){
-    MMLock * n = MM_init(MMTypeNumber);
+    MMLock * n = MM_init(MMTypeLock);
     return n;
 }
 

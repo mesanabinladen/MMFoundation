@@ -103,13 +103,13 @@ MMArray *MMArray_initWithArray(MMArray * array, MMBool flag){
     newArr->items = malloc(newArr->count*sizeof(void *));
     
     if (flag){
-        for (int i=0; i<newArr->count; i++){
+        for (size_t i=0; i<newArr->count; i++){
             newArr->items[i] = MM_copy(array->items[i]); //each object in array receives a MM_copy() message to create a copy of the object. In a managed memory environment, this is instead of the retain message the object would otherwise receive. The object copy is then added to the returned array.
         }
     }
     else{
         memcpy(&newArr->items, &array->items, newArr->count);
-        for (int i=0; i<newArr->count; i++){
+        for (size_t i=0; i<newArr->count; i++){
             MM_retain(newArr->items[i]); //each object in array simply receives a retain message when it is added to the returned array.
         }
     }
@@ -139,7 +139,7 @@ MMArray * MMArray_copy(const MMArray * recv){
     newPtr->retainCount = 1;
 
     //copy every single contained object
-    for (int i=0; i<newPtr->count;i++) {   
+    for (size_t i=0; i<newPtr->count;i++) {   
         newPtr->items[i] = MM_copy(recv->items[i]);
     }
 
@@ -150,7 +150,7 @@ MMArray * MMArray_copy(const MMArray * recv){
 void MMArray_release(MMArray *recv) {
     if (!recv) return;
 
-    for (int i=0; i<recv->count;i++)
+    for (size_t i=0; i<recv->count;i++)
     {   
         if (recv->items[i]) {
             MM_release(recv->items[i]);
@@ -233,7 +233,7 @@ void MMMutableArray_removeObjectAtIndex(MMMutableArray * recv, MMUInteger index)
 
     MM_release(MMArray_objectAtIndex(recv, index));
     
-    for (int n=index+1; n< recv->count; n++)
+    for (size_t n=index+1; n< recv->count; n++)
     {
         recv->items[n-1]=recv->items[n];
     }

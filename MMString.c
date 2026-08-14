@@ -61,6 +61,18 @@ MMString *MMString_initWithFormat(const char *format, ...) {
     return newStr;
 }
 
+MMString *MMString_initWithData(MMData * data, MMStringEncoding encoding){
+    (void)encoding;
+    //MMStringEncoding are not yet implemented!
+    if (!data) return nil;
+    char * ptr = (char *)data->bytes;
+    if (ptr[data->length-1] != '\0'){
+        printf("Invalid termination of string from MMData!");
+        exit(1);
+    }
+    return MMString_initWithCString(data->bytes);
+} 
+
 MMString *MMString_stringByDeletingLastPathComponent(const MMString *recv){
     if (!recv || !recv->cString) return nil;
 
@@ -90,6 +102,18 @@ MMString *MMString_stringByAppendingString(const MMString *recv, const MMString 
 
     strcpy(newStr->cString, recv->cString);
     strcat(newStr->cString, append->cString);
+    return newStr;
+}
+
+MMString *MMString_stringByAppendingCString(const MMString *recv, const char *append){
+    if (!recv || !append) return nil;
+
+    size_t newLength = recv->length + strlen(append);
+    MMString *newStr = MMString_init(newLength);
+    if (!newStr) return nil;
+
+    strcpy(newStr->cString, recv->cString);
+    strcat(newStr->cString, append);
     return newStr;
 }
 
@@ -128,11 +152,14 @@ MMBool MMString_writeToFile(const MMString *recv, const MMString *path, MMBool u
 }
 
 const char *MMString_cStringUsingEncoding(const MMString *recv, MMStringEncoding enc){
+    (void)enc;
     //MMStringEncoding are not yet implemented!
     return recv->cString;
 }
 
 MMString * MMString_stringWithContentsOfFile(MMString * path, MMStringEncoding enc, MMError *error){
+    (void)enc;
+    //MMStringEncoding are not yet implemented!
     if (error){
         printf("Error codes not implemented yet!");
         exit(1);
@@ -145,7 +172,7 @@ MMString * MMString_stringWithContentsOfFile(MMString * path, MMStringEncoding e
     //MMStringEncoding are not yet implemented!
     MMString *str = MMString_init(data->length);
     if (!str) {
-        MMData_release(data);
+        MM_release(data);
         return nil;
     }
 
@@ -153,7 +180,7 @@ MMString * MMString_stringWithContentsOfFile(MMString * path, MMStringEncoding e
         memcpy(str->cString, data->bytes, str->length);
     }
 
-    MMData_release(data);
+    MM_release(data);
     return str;
 }
 
@@ -185,9 +212,9 @@ MMArray * MMString_componentsSeparatedByString(const MMString * recv, MMString *
         MMString *part = MMString_init(partLen);
         if (!part) {
             for (size_t idx = 0; idx < result->count; idx++) {
-                MMString_release((MMString *)result->items[idx]);
+                MM_release((MMString *)result->items[idx]);
             }
-            MMMutableArray_release(result);
+            MM_release(result);
             return nil;
         }
         if (partLen > 0) {
@@ -242,7 +269,6 @@ MMRange MMString_rangeOfCString(const MMString *recv, const char * str){
     const unsigned char *needle = (const unsigned char *)str;
     size_t needleLen = strlen(str);
 
-    size_t end = recv->length;
     for (size_t i = 0; i <= haystackLen; i++) {
         if (memcmp(haystack + i, needle, needleLen) == 0) {
             return (MMRange){ i, needleLen };
@@ -251,7 +277,6 @@ MMRange MMString_rangeOfCString(const MMString *recv, const char * str){
 
     return notFound;
 }
-
 
 MMUInteger MMString_hash(const MMString *recv){
     if (!recv || !recv->cString) return 0;
@@ -280,6 +305,7 @@ MMBool MMString_isEqualToCString(const MMString *recv, const char * str){
 }
 
 MMUInteger MSString_lengthOfBytesUsingEncoding(const MMString *recv, MMStringEncoding enc){
+    (void)enc;
     //MMStringEncoding are not yet implemented!
     return recv->length;   
 }
@@ -330,12 +356,23 @@ MMString *MMString_stringByReplacingOccurrencesOfString(const MMString *recv, MM
     return out;
 }
 
+MMString *MMString_stringByReplacingOccurrencesOfCString(const MMString *recv, char *target, char *replacement){
+    MMString * t = MMString_initWithCString(target);
+    MMString * r = MMString_initWithCString(replacement);
+    MMString *new= MMString_stringByReplacingOccurrencesOfString(recv, t, r);
+    MM_release(t);
+    MM_release(r);
+    return new;
+
+}
+
 const char * MMString_fileSystemRepresentation(const MMString *recv){
     //TODO: implement true checks!
     return recv->cString;
 }
 
 MMBool MMString_getCString(const MMString *recv, char * buffer, MMUInteger maxBufferCount, MMStringEncoding encoding){
+    (void)encoding;
     //MMStringEncoding are not yet implemented!
     if (!recv || !recv->cString || !buffer || maxBufferCount == 0) return NO;
 
@@ -447,7 +484,6 @@ double MMString_doubleValue(const MMString * recv){
 
 MMString *MMString_copy(MMString * recv){
     if (!recv) return nil;
-    
     return MMString_initWithCString(recv->cString);
 }
 
@@ -462,6 +498,10 @@ void MMString_release(MMString *recv) {
 //-----MUTABLE STRING
 MMMutableString *MMMutableString_initWithCString(const char *str){
     return (MMMutableString *)MMString_initWithCString(str);
+}
+
+MMMutableString *MMMutableString_initWithData(MMData * data, MMStringEncoding encoding){
+    return (MMMutableString *)MMString_initWithData(data, encoding);
 }
 
 void MMMutableString_appendString(MMMutableString *recv, MMString * aString){

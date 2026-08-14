@@ -70,7 +70,6 @@ MMData * MMFileHandle_availableData(const MMFileHandle *recv) {
     return d;
 }
 
-
 ssize_t MMFileHandle_writeData(MMFileHandle *recv, const MMData *data) {
     return write(recv->fd, data->bytes, data->length);
 }

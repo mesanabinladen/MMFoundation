@@ -12,7 +12,6 @@
 #include <sys/time.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-#include <unistd.h>
 
 #include "MMMemoryManagement.h"
 
@@ -50,7 +49,11 @@ typedef enum {
     MMTypeString,
     MMTypeMutableString,
     MMTypeNumber,
-    MMTypeLock
+    MMTypeLock,
+    MMTypeURLRequest,
+    MMTypeURL,
+    MMTypeHTTPURLResponse,
+    MMTypeError
 } ObjectTypes;
 
 typedef struct  {
@@ -73,8 +76,8 @@ typedef struct MMError {
     int retainCount;
     //-------------
    MMUInteger code;// The error code.
-   MMErrorDomain * domain; //A string containing the error domain.
-   //NSDictionary<NSString *,id>  userInfo;// The user info dictionary NOT IMPLEMENTED YET.
+   MMErrorDomain domain; //A string containing the error domain.
+   MMString *localizedDescription;
 } MMError;
 
 typedef struct MMRange {

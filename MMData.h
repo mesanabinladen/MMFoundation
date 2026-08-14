@@ -1,8 +1,6 @@
 #ifndef MMDATA_H
 #define MMDATA_H
 
-#include <stddef.h>
-#include "MMString.h"
 #include "MMTypes.h"
 
 typedef struct MMData {
@@ -27,7 +25,6 @@ MMData *MMData_dataUsingEncoding(const MMString * str, MMStringEncoding enc);
 MMRange MMData_rangeOfData(const MMData *recv, MMData *dataToFind, MMDataSearchOptions mask, MMRange searchRange);
 MMBool MMData_writeToFile(const MMData *recv, const MMString * path, MMBool useAuxiliaryFile);
 MMData *MMData_copy(MMData * recv);
-void MMData_release(MMData *recv);
 
 typedef struct MMMutableData {
     int type;
@@ -48,6 +45,5 @@ void MMMutableData_appendBytes(MMMutableData * recv, const void * bytes, MMUInte
 void MMMutableData_appendData(MMMutableData * recv, MMData * other);
 MMBool MMMutableData_writeToFile(const MMMutableData *recv, const MMString *path, MMBool useAuxiliaryFile);
 MMMutableData *MMMutableData_copy(MMMutableData * recv);
-void MMMutableData_release(MMMutableData *recv);
 
 #endif /*MMDATA_H*/

@@ -15,6 +15,5 @@ typedef struct MMLock {
 MMLock * MMLock_init();
 void MMLock_lock(MMLock * recv);
 void MMLock_unlock(MMLock * recv);
-void MMLock_release(MMLock * recv);
 
 #endif /*MMLOCK_H*/

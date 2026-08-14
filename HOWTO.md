@@ -45,7 +45,7 @@ Create and free `MMString` objects:
 ```c
 MMString *s = MMString_initWithCString("hello");
 const char *c = s->cString;
-MMString_release(s); // *c gest freed too
+MM_release(s); // *c gest freed too
 
 ```
 
@@ -56,7 +56,7 @@ MMArray *a = MMArray_initWithObjects((void*)MMString_initWithCString("one"),
                                      (void*)MMString_initWithCString("two"),
                                      nil);
 size_t n = MMArray_count(a);
-MMArray_release(a);
+MM_release(a);
 ```
 
 String operations:
@@ -67,8 +67,8 @@ MMArray *parts = MMString_componentsSeparatedByString(s, MMString_initWithCStrin
 MMString *repl = MMString_stringByReplacingOccurrencesOfString(s,
     MMString_initWithCString("old"), MMString_initWithCString("new"));
 /* remember to release returned objects */
-MMArray_release(parts);
-MMString_release(repl);
+MM_release(parts);
+MM_release(repl);
 ```
 
 Reading/writing files (inside library tests/examples)
@@ -81,9 +81,9 @@ MMString *path = MMString_initWithCString("tests/data/sample.txt");
 MMString *contents = MMString_stringWithContentsOfFile(path, MMUTF8StringEncoding, &err);
 if (contents) {
     /* use then release */
-    MMString_release(contents);
+    MM_release(contents);
 }
-MMString_release(path);
+MM_release(path);
 ```
 
 Using `MMAutoreleasePool_init` / `MMAutoreleasePool_drain`
@@ -99,11 +99,11 @@ MMAutoreleasePool_init();
 
     if (data) {
         /* use data here */
-        MMData_release(data); // optional, pool will also clean it up
+        MM_release(data); // optional, pool will also clean it up
     }
 
-    MMString_release(tmpString); // optional manual release
-    MMString_release(tmpPath);  // optional manual release
+    MM_release(tmpString); // optional manual release
+    MM_release(tmpPath);  // optional manual release
 }
 MMAutoreleasePool_drain();
 ```
