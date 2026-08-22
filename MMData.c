@@ -43,7 +43,7 @@ void MMData_getBytes(const MMData *recv, void * buffer , MMUInteger length){
 
 void MMData_getBytesFromRange(const MMData *recv, void * buffer , MMRange range){
     if (!recv || !buffer) return; 
-    memcpy(buffer, &(recv->bytes)[range.location], range.length);
+    memcpy(buffer, &((char *)recv->bytes)[range.location], range.length);
 }
 
 
