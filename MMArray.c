@@ -206,6 +206,7 @@ void *MMMutableArray_objectAtIndex(const MMMutableArray *recv, size_t index) {
 }
 
 void MMMutableArray_addObject(MMMutableArray * recv, void * anObject){
+    if (!recv || !anObject) return;
     size_t newCount = recv->count + 1;
     void **newItems = realloc(recv->items, newCount * sizeof(void*));
     if (!newItems){

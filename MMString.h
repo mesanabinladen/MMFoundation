@@ -37,6 +37,7 @@ MMString *MMString_substringToIndex(const MMString *recv, MMUInteger to);
 long MMString_longValue(const MMString *recv);
 long long MMString_longLongValue(const MMString *recv);
 double MMString_doubleValue(const MMString *recv);
+MMUInteger MMString_lengthOfBytesUsingEncoding(const MMString *recv, MMStringEncoding enc);
 MMString *MMString_copy(MMString *recv);
 
 typedef MMString MMMutableString ;
@@ -44,6 +45,7 @@ typedef MMString MMMutableString ;
 MMMutableString *MMMutableString_initWithCString(const char *str);
 MMMutableString *MMMutableString_initWithData(MMData *data, MMStringEncoding encoding);
 void MMMutableString_appendString(MMMutableString *recv, MMString * aString);
+MMUInteger MMMutableString_lengthOfBytesUsingEncoding(const MMString *recv, MMStringEncoding enc);
 MMMutableString *MMMutableString_copy(MMMutableString * recv);
 
 #endif /*MMSTRING_H*/

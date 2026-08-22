@@ -4,9 +4,9 @@
 
 #include "MMReleases.h"
 
-//autoreleasepool
-MMMutableArray * pools = nil;
-MMMutableArray *actualPool = nil;
+//thread local autoreleasepool
+static _Thread_local MMMutableArray *pools = NULL;
+static _Thread_local MMMutableArray *actualPool = NULL;
 
 void MMAutoreleasePool_init(){  
     if (!pools)
@@ -74,6 +74,12 @@ void * MM_init(int type){
         case (MMTypeError):
             voidPtr = malloc(sizeof(MMError));
             break;
+        case (MMTypeOperationQueue):
+            voidPtr = malloc(sizeof(MMOperationQueue));
+            break;
+        case (MMTypeInvocationOperation):
+            voidPtr = malloc(sizeof(MMInvocationOperation));
+            break;
         default:
             printf("Error initializig object type %i!\n", type);
             exit(1);
@@ -119,11 +125,11 @@ void * MM_copy(void * anObject){
             break;
         case (MMTypeDate):
             objSize = sizeof(MMDate);
-            //no subclassing of MM_copy!
+            //no subclassing of _copy!
             break;
         case (MMTypeFileHandle):
             objSize = sizeof(MMFileHandle);
-            //no subclassing of MM_copy!
+            //no subclassing of _copy!
             break;
         case (MMTypeString):
             newPtr = MMString_copy((MMString *) ptr);
@@ -133,11 +139,11 @@ void * MM_copy(void * anObject){
             break;
         case (MMTypeNumber):
             objSize = sizeof(MMNumber);
-            //no subclassing of MM_copy!
+            //no subclassing of _copy!
             break;
         case (MMTypeLock):
             objSize = sizeof(MMLock);
-            //no subclassing of MM_copy!
+            //no subclassing of _copy!
             break;
         case (MMTypeURLRequest):
             newPtr = MMURLRequest_copy((MMURLRequest *) ptr);
@@ -150,6 +156,13 @@ void * MM_copy(void * anObject){
             break;
         case (MMTypeError):
             newPtr = MMError_copy((MMError *) ptr);
+            break;
+        case (MMTypeOperationQueue):
+            newPtr = MMOperationQueue_copy((MMOperationQueue *) ptr);
+            break;
+        case (MMTypeInvocationOperation):
+            objSize = sizeof(MMInvocationOperation);
+            //no subclassing of _copy!
             break;
         default:
             printf("Error initializig object type %i!\n", ptr->type);
@@ -215,6 +228,12 @@ void MM_release(void* anObject){
                 break;
             case (MMTypeError):
                 MMError_release((MMError *) ptr);
+                break;
+            case (MMTypeOperationQueue):
+                MMOperationQueue_release((MMOperationQueue *) ptr);
+                break;
+            case (MMTypeInvocationOperation):
+                MMInvocationOperation_release((MMInvocationOperation *) ptr);
                 break;
             default:
                 printf("Error releasing object type %i!\n", ptr->type);

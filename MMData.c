@@ -41,6 +41,11 @@ void MMData_getBytes(const MMData *recv, void * buffer , MMUInteger length){
     memcpy(buffer, recv->bytes, length);
 }
 
+void MMData_getBytesFromRange(const MMData *recv, void * buffer , MMRange range){
+    if (!recv || !buffer) return; 
+    memcpy(buffer, &(recv->bytes)[range.location], range.length);
+}
+
 
 MMData *MMData_dataUsingEncoding(const MMString * str, MMStringEncoding enc){
     (void)enc;
@@ -145,13 +150,17 @@ void MMutableData_getBytes(const MMMutableData *recv, void * buffer , MMUInteger
     MMData_getBytes((MMData *)recv, buffer, length);
 }
 
+void MMMutableData_getBytesFromRange(const MMMutableData *recv, void * buffer , MMRange range){
+    MMData_getBytesFromRange((MMData *)recv, buffer, range);
+}
+
 void MMMutableData_appendBytes(MMMutableData * recv, const void * bytes, MMUInteger length){
     if (!recv || !bytes || !length) return;
 
     size_t originalLength = recv->length;
-    size_t newLength = recv->length + length;
-    recv->bytes = realloc(recv->bytes, newLength);      
-    
+    recv->length  = recv->length + length;
+    recv->bytes = realloc(recv->bytes, recv->length );      
+ 
     unsigned char *dst = (unsigned char *)recv->bytes;
     memcpy(dst + originalLength, bytes, length);
 

@@ -14,5 +14,7 @@
 #include "MMURLRequest.h"
 #include "MMURL.h"
 #include "MMURLConnection.h"
+#include "MMOperationQueue.h"
+#include "MMinvocationOperation.h"
 
 #endif /* MMFOUNDATION_H */

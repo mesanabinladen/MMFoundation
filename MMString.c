@@ -373,7 +373,7 @@ MMBool MMString_getCString(const MMString *recv, char * buffer, MMUInteger maxBu
     //MMStringEncoding are not yet implemented!
     if (!recv || !recv->cString || !buffer || maxBufferCount == 0) return NO;
 
-    if (maxBufferCount > recv->length) {
+    if (maxBufferCount < recv->length) {
         buffer[0] = '\0';
         return NO;
     }
@@ -479,6 +479,12 @@ double MMString_doubleValue(const MMString * recv){
     return d;
 }
 
+MMUInteger MMString_lengthOfBytesUsingEncoding(const MMString *recv, MMStringEncoding enc){
+    //MMStringEncoding are not yet implemented!
+    return recv->length;
+}
+
+
 MMString *MMString_copy(MMString * recv){
     if (!recv) return nil;
     return MMString_initWithCString(recv->cString);
@@ -512,6 +518,11 @@ void MMMutableString_appendString(MMMutableString *recv, MMString * aString){
     recv->cString[newLength]='\0';
     recv->length=newLength;
 }
+
+MMUInteger MMMutableString_lengthOfBytesUsingEncoding(const MMString *recv, MMStringEncoding enc){
+    return MMString_lengthOfBytesUsingEncoding(recv, enc);
+}
+
 
 MMMutableString *MMMutableString_copy(MMMutableString * recv){
     return (MMMutableString *)MMString_copy(recv);

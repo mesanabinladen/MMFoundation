@@ -28,4 +28,8 @@ void MMURL_release(MMURL *recv);
 
 void MMURLRequest_release(MMURLRequest *recv);
 
+void MMOperationQueue_release(MMOperationQueue *recv);
+
+void MMInvocationOperation_release(MMInvocationOperation * recv);
+
 #endif /*MMRELEASES_H*/
