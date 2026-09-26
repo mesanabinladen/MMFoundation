@@ -5,7 +5,11 @@
 #include "MMinvocationOperation.h"
 #include "MMArray.h"
 
-#include <pthread.h>
+#if defined(_WIN32) || defined(_WIN64)
+    #include <windows.h>
+#else
+    #include <pthread.h>
+#endif
 
 typedef struct MMOperationQueue {
     int type;

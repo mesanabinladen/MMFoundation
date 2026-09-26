@@ -1,39 +1,6 @@
 #include "MMOperationQueue.h"
 #include "MMTypes.h"
 
-#ifdef _WIN32
-    #include <windows.h>
-#else
-    #include <pthread.h>
-#endif
-
-
-/* ============================================================
-   Implementazione thread
-   ============================================================ */
-
-#if defined(_WIN32) || defined(_WIN64)
-static DWORD WINAPI thread_proc(LPVOID arg)
-{
-    MMOperation *op = (MMOperation *)arg;
-    if (op && op->func) {
-        op->func(op->context);
-    }
-    free(op);
-    return 0;
-}
-#else
-static void *thread_proc(void *arg)
-{
-    MMInvocationOperation *op = (MMInvocationOperation *)arg;
-    if (op && op->func) {
-        op->func(op->context);
-    }
-    free(op);
-    return NULL;
-}
-#endif
-
 #if defined(_WIN32) || defined(_WIN64)
 static DWORD WINAPI operation_thread(LPVOID arg)
 #else
@@ -49,7 +16,7 @@ static void *operation_thread(void *arg)
     MMInvocationOperation *op = ctx->op;
     MMOperationQueue *queue = ctx->queue;
 
-    // Esegui il lavoro
+    // Start the job
     if (op->func) {
         op->func(op->context);
     }
