@@ -55,7 +55,8 @@ typedef enum {
     MMTypeHTTPURLResponse,
     MMTypeError,
     MMTypeOperationQueue,
-    MMTypeInvocationOperation
+    MMTypeInvocationOperation,
+    MMTypeProcessInfo
 } ObjectTypes;
 
 typedef struct  {

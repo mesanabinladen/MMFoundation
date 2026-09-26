@@ -44,9 +44,35 @@ off_t MMFileHandle_seekToEndOfFile(const MMFileHandle *recv) {
 }
 
 MMData *MMFileHandle_readDataOfLength(const MMFileHandle *recv, size_t length){
-    char * buffer=malloc(length); //I have to use malloc (heap) instead of stack because stack is not big enough
-    read(recv->fd, buffer, length);
-    MMData *d = MMData_initWithBytes(buffer, length);
+    if (!recv) return NULL;
+
+    struct stat fileInfo;
+    if (fstat(recv->fd, &fileInfo) != 0) return NULL;
+    MMBool isRegularFile = S_ISREG(fileInfo.st_mode);
+
+    char *buffer = malloc(length ? length : 1);
+    if (!buffer) return NULL;
+
+    size_t bytesRead = 0;
+    while (bytesRead < length){
+        size_t bytesToRead = length - bytesRead;
+        if (bytesToRead > (size_t)SSIZE_MAX) bytesToRead = (size_t)SSIZE_MAX;
+
+        ssize_t result = read(recv->fd, buffer + bytesRead, bytesToRead);
+        if (result > 0){
+            bytesRead += (size_t)result;
+            if (!isRegularFile) break;
+        }
+        else if (result == 0){
+            break;
+        }
+        else if (errno != EINTR){
+            free(buffer);
+            return NULL;
+        }
+    }
+
+    MMData *d = MMData_initWithBytes(buffer, bytesRead);
     free(buffer);
     return d;
 }

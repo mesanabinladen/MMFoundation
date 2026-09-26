@@ -9,11 +9,11 @@ static _Thread_local MMMutableArray *pools = NULL;
 static _Thread_local MMMutableArray *actualPool = NULL;
 
 void MMAutoreleasePool_init(){  
+    actualPool = MMMutableArray_init();
     if (!pools)
     {
         pools=MMMutableArray_initWithCapacity(0);
     }
-    actualPool = MMMutableArray_init();
     MMMutableArray_addObject(pools, actualPool);
 }
 
@@ -46,6 +46,9 @@ void * MM_init(int type){
             break;
         case (MMTypeDate):
             voidPtr = malloc(sizeof(MMDate));
+            break;
+        case (MMTypeProcessInfo):
+            voidPtr = malloc(sizeof(MMProcessInfo));
             break;
         case (MMTypeFileHandle):
             voidPtr = malloc(sizeof(MMFileHandle));
@@ -127,6 +130,9 @@ void * MM_copy(void * anObject){
             objSize = sizeof(MMDate);
             //no subclassing of _copy!
             break;
+        case (MMTypeProcessInfo):
+                newPtr = MMProcessInfo_copy((MMProcessInfo *)ptr);
+                break;
         case (MMTypeFileHandle):
             objSize = sizeof(MMFileHandle);
             //no subclassing of _copy!
@@ -201,6 +207,9 @@ void MM_release(void* anObject){
                 break;
             case (MMTypeDate):
                 MMDate_release((MMDate *)ptr);
+                break;
+            case (MMTypeProcessInfo):
+                MMProcessInfo_release((MMProcessInfo *)ptr);
                 break;
             case (MMTypeFileHandle):
                 MMFileHandle_release((MMFileHandle *)ptr);

@@ -1,23 +1,33 @@
 #include "MMData.h"
 #include "MMTypes.h"
 
+#if defined(_WIN32) || defined(_WIN64)
+#include <windows.h>
+#else
+#include <sys/mman.h>
+#endif
+
 MMData *MMData_initWithCapacity(size_t length){
     MMData *data = MM_init(MMTypeData);
 
-    data->bytes = malloc(length);
+    data->bytes = malloc(length ? length : 1);
     if (!data->bytes) {
         free(data);
         return NULL;
     }
 
     data->length = length;
+    data->isMemoryMapped = NO;
     return data;
 }
 
 //Initializes a data object filled with a given number of bytes copied from a given buffer.
 MMData *MMData_initWithBytes(const void *bytes, size_t length){
+    if (!bytes && length > 0) return NULL;
+
     MMData *data = MMData_initWithCapacity(length);
-    memcpy(data->bytes, bytes, length);
+    if (!data) return NULL;
+    if (length > 0) memcpy(data->bytes, bytes, length);
     return data;
 
 }
@@ -33,6 +43,69 @@ MMData *MMData_initWithContentsOfFile(const MMString *path){
     fread(data->bytes, 1, length, file);
     fclose(file);
 
+    return data;
+}
+
+MMData *MMData_dataWithContentsOfMappedFile(const MMString *path){
+    if (!path || !path->cString) return NULL;
+
+    void *bytes = NULL;
+    size_t length = 0;
+    MMBool isMemoryMapped = NO;
+
+#if defined(_WIN32) || defined(_WIN64)
+    HANDLE file = CreateFileA(path->cString, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+    if (file == INVALID_HANDLE_VALUE) return NULL;
+
+    LARGE_INTEGER fileSize;
+    if (!GetFileSizeEx(file, &fileSize) || fileSize.QuadPart < 0 || (uint64_t)fileSize.QuadPart > SIZE_MAX){
+        CloseHandle(file);
+        return NULL;
+    }
+    length = (size_t)fileSize.QuadPart;
+
+    if (length > 0){
+        HANDLE mapping = CreateFileMappingA(file, NULL, PAGE_READONLY, 0, 0, NULL);
+        if (!mapping){
+            CloseHandle(file);
+            return NULL;
+        }
+
+        bytes = MapViewOfFile(mapping, FILE_MAP_READ, 0, 0, 0);
+        CloseHandle(mapping);
+        if (!bytes){
+            CloseHandle(file);
+            return NULL;
+        }
+        isMemoryMapped = YES;
+    }
+    CloseHandle(file);
+#else
+    int fd = open(path->cString, O_RDONLY);
+    if (fd < 0) return NULL;
+
+    struct stat fileInfo;
+    if (fstat(fd, &fileInfo) != 0 || fileInfo.st_size < 0 || (uintmax_t)fileInfo.st_size > SIZE_MAX){
+        close(fd);
+        return NULL;
+    }
+    length = (size_t)fileInfo.st_size;
+
+    if (length > 0){
+        bytes = mmap(NULL, length, PROT_READ, MAP_PRIVATE, fd, 0);
+        close(fd);
+        if (bytes == MAP_FAILED) return NULL;
+        isMemoryMapped = YES;
+    }
+    else{
+        close(fd);
+    }
+#endif
+
+    MMData *data = MM_init(MMTypeData);
+    data->bytes = bytes;
+    data->length = length;
+    data->isMemoryMapped = isMemoryMapped;
     return data;
 }
 
@@ -110,6 +183,15 @@ MMRange MMData_rangeOfData(const MMData *recv, MMData *dataToFind, MMDataSearchO
     return notFound;
 }
 
+MMData *MMData_subdataWithRange(const MMData *recv, MMRange range){
+    if (!recv || !recv->bytes) return NULL;
+    if (range.location + range.length > recv->length) return NULL;
+
+    MMData *subdata = MMData_initWithCapacity(range.length);
+    memcpy(subdata->bytes, (unsigned char *)recv->bytes + range.location, range.length);
+    return subdata;
+}
+
 MMBool MMData_writeToFile(const MMData *recv, const MMString *path, MMBool useAuxiliaryFile) {
     if (!recv || !path || !recv->bytes || !path->cString) return NO;
 
@@ -130,7 +212,16 @@ MMData *MMData_copy(MMData * recv){
 
 void MMData_release(MMData *recv) {
     if (!recv) return;
-    free(recv->bytes);
+    if (recv->isMemoryMapped){
+#if defined(_WIN32) || defined(_WIN64)
+        UnmapViewOfFile(recv->bytes);
+#else
+        munmap(recv->bytes, recv->length);
+#endif
+    }
+    else{
+        free(recv->bytes);
+    }
     free(recv);
 }
 
@@ -146,12 +237,16 @@ MMMutableData *MMMutableData_initWithContentsOfFile(MMString *path){
     return (MMMutableData *)MMData_initWithContentsOfFile(path);
 }
 
-void MMutableData_getBytes(const MMMutableData *recv, void * buffer , MMUInteger length){
+void MMMutableData_getBytes(const MMMutableData *recv, void * buffer , MMUInteger length){
     MMData_getBytes((MMData *)recv, buffer, length);
 }
 
 void MMMutableData_getBytesFromRange(const MMMutableData *recv, void * buffer , MMRange range){
     MMData_getBytesFromRange((MMData *)recv, buffer, range);
+}
+
+MMData *MMMutableData_subdataWithRange(const MMMutableData *recv, MMRange range){
+    return MMData_subdataWithRange((const MMData *)recv, range);
 }
 
 void MMMutableData_appendBytes(MMMutableData * recv, const void * bytes, MMUInteger length){

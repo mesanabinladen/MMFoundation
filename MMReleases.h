@@ -10,6 +10,7 @@ void MMData_release(MMData *recv);
 void MMMutableData_release(MMMutableData *recv);
 
 void MMDate_release(MMDate * recv);
+void MMProcessInfo_release(MMProcessInfo *recv);
 
 void MMError_release(MMError * recv);
 

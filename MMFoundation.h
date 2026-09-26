@@ -6,6 +6,7 @@
 #include "MMString.h"
 #include "MMMemoryManagement.h"
 #include "MMDate.h"
+#include "MMProcessInfo.h"
 #include "MMFileManager.h"
 #include "MMArray.h"
 #include "MMNumber.h"
