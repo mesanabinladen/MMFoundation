@@ -17,7 +17,7 @@ typedef struct MMOperationQueue {
     //-------------
     MMMutableArray * operations;
     // sincronization
-    int runningCount; 
+    int operationCount; 
 #if defined(_WIN32) || defined(_WIN64)
     CRITICAL_SECTION lock;
     CONDITION_VARIABLE condition;

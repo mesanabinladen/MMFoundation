@@ -61,13 +61,14 @@ MMString *MMString_initWithFormat(const char *format, ...) {
 MMString *MMString_initWithData(MMData * data, MMStringEncoding encoding){
     (void)encoding;
     //MMStringEncoding are not yet implemented!
-    if (!data) return nil;
-    char * ptr = (char *)data->bytes;
-    if (ptr[data->length-1] != '\0'){
-        printf("Invalid termination of string from MMData!");
-        exit(1);
+    if (!data || (!data->bytes && data->length > 0)) return nil;
+
+    MMString *string = MMString_init(data->length);
+    if (!string) return nil;
+    if (data->length > 0) {
+        memcpy(string->cString, data->bytes, data->length);
     }
-    return MMString_initWithCString(data->bytes);
+    return string;
 } 
 
 MMString *MMString_stringByDeletingLastPathComponent(const MMString *recv){

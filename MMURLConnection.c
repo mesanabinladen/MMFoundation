@@ -121,7 +121,7 @@ static MMData *send_with_winhttp(MMURLRequest *request,
 
     // Leggi il body
     char *data_bytes = calloc(1, sizeof(char));
-    int data_length = 1;
+    int data_length = 0;
     if (!data_bytes) {
         WinHttpCloseHandle(hRequest);
         WinHttpCloseHandle(hConnect);

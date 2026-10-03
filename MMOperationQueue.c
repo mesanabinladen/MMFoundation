@@ -29,7 +29,7 @@ static void *operation_thread(void *arg)
 #endif
 
     op->isFinished = 1;
-    queue->runningCount--;
+    queue->operationCount--;
 
 #if defined(_WIN32) || defined(_WIN64)
     LeaveCriticalSection(&queue->lock);
@@ -51,7 +51,7 @@ static void *operation_thread(void *arg)
 MMOperationQueue *MMOperationQueue_init(){
     MMOperationQueue * queue = MM_init(MMTypeOperationQueue);
     queue->operations = MMMutableArray_initWithCapacity(0);
-    queue->runningCount = 0;
+    queue->operationCount = 0;
 
 #if defined(_WIN32) || defined(_WIN64)
     InitializeCriticalSection(&queue->lock);
@@ -73,7 +73,7 @@ void MMOperationQueue_addOperation(MMOperationQueue * recv,  MMInvocationOperati
 #endif
 
     MMMutableArray_addObject(recv->operations, op);
-    recv->runningCount++;
+    recv->operationCount++;
 
 #if defined(_WIN32) || defined(_WIN64)
     LeaveCriticalSection(&recv->lock);
@@ -100,7 +100,7 @@ void MMOperationQueue_addOperation(MMOperationQueue * recv,  MMInvocationOperati
 #else
     pthread_t thread;
 
-    //printf("ADD op=%p func=%p running=%d\n", op, (void*)op->func, recv->runningCount);
+    //printf("ADD op=%p func=%p running=%d\n", op, (void*)op->func, recv->operationCount);
     if (pthread_create(&thread, NULL, operation_thread, ctx) == 0) {
         pthread_detach(thread);
     } else {
@@ -115,13 +115,13 @@ void MMOperationQueue_waitUntilAllOperationsAreFinished(MMOperationQueue *recv)
 
 #if defined(_WIN32) || defined(_WIN64)
     EnterCriticalSection(&recv->lock);
-    while (recv->runningCount > 0) {
+    while (recv->operationCount > 0) {
         SleepConditionVariableCS(&recv->condition, &recv->lock, INFINITE);
     }
     LeaveCriticalSection(&recv->lock);
 #else
     pthread_mutex_lock(&recv->lock);
-    while (recv->runningCount > 0) {
+    while (recv->operationCount > 0) {
         pthread_cond_wait(&recv->condition, &recv->lock);
     }
     pthread_mutex_unlock(&recv->lock);
