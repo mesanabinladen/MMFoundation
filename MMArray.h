@@ -36,6 +36,8 @@ void MMMutableArray_addObject(MMMutableArray * recv, void * anObject);
 void MMMutableArray_replaceObjectAtIndex(const MMMutableArray *recv, MMUInteger index, void* anObject);
 void MMMutableArray_removeObjectAtIndex(MMMutableArray * recv, MMUInteger index);
 void MMMutableArray_removeLastObject(MMMutableArray * recv);
+void MMMutableArray_removeAllObjects(MMMutableArray *recv);
+
 MMMutableArray * MMMutableArray_copy(const MMMutableArray * recv);
 
 #endif /*MMARRAY_H*/

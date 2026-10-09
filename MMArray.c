@@ -238,7 +238,6 @@ void MMMutableArray_removeObjectAtIndex(MMMutableArray * recv, MMUInteger index)
     {
         recv->items[n-1]=recv->items[n];
     }
-
     size_t newCount = recv->count - 1;
     recv->items = realloc(recv->items, newCount * sizeof(void*));
     recv->count = newCount;
@@ -246,6 +245,16 @@ void MMMutableArray_removeObjectAtIndex(MMMutableArray * recv, MMUInteger index)
 
 void MMMutableArray_removeLastObject(MMMutableArray * recv){
     MMMutableArray_removeObjectAtIndex(recv, recv->count-1);
+}
+
+void MMMutableArray_removeAllObjects(MMMutableArray * recv){
+    if (!recv) return;
+    for (size_t n = 0; n < recv->count; n++) {
+        MM_release(recv->items[n]);
+    }
+    free(recv->items);
+    recv->items = nil;
+    recv->count = 0;
 }
 
 MMMutableArray * MMMutableArray_copy(const MMMutableArray * recv){

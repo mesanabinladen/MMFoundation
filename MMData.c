@@ -268,6 +268,7 @@ void MMMutableData_appendData(MMMutableData * recv, MMData * other){
 MMBool MMMutableData_writeToFile(const MMMutableData *recv, const MMString *path, MMBool useAuxiliaryFile){
     return MMData_writeToFile((const MMData *)recv, path, useAuxiliaryFile);
 }
+
 MMMutableData *MMMutableData_copy(MMMutableData * recv){
     return (MMMutableData *)MMData_copy((MMData*)recv);
 }

@@ -361,7 +361,6 @@ MMString *MMString_stringByReplacingOccurrencesOfCString(const MMString *recv, c
     MM_release(t);
     MM_release(r);
     return new;
-
 }
 
 const char * MMString_fileSystemRepresentation(const MMString *recv){
@@ -422,6 +421,10 @@ void trimTrailingNewLine(char *str){
         str[len-1]='\0';
     }
     
+}
+
+int MMString_intValue(const MMString *recv) {
+    return (int)MMString_integerValue(recv);
 }
 
 long MMString_longValue(const MMString * recv){

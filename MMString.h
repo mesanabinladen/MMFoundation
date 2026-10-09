@@ -34,6 +34,7 @@ const char *MMString_fileSystemRepresentation(const MMString *recv);
 MMBool MMString_hasSuffix(const MMString *recv, MMString *str);
 MMString *MMString_substringFromIndex(const MMString *recv, MMUInteger from);
 MMString *MMString_substringToIndex(const MMString *recv, MMUInteger to);
+int MMString_intValue(const MMString *recv);
 long MMString_longValue(const MMString *recv);
 long long MMString_longLongValue(const MMString *recv);
 double MMString_doubleValue(const MMString *recv);
