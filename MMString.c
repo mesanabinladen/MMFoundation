@@ -58,17 +58,21 @@ MMString *MMString_initWithFormat(const char *format, ...) {
     return newStr;
 }
 
-MMString *MMString_initWithData(MMData * data, MMStringEncoding encoding){
+MMString *MMString_initWithBytes(const void * bytes, MMUInteger len, MMStringEncoding encoding){
     (void)encoding;
     //MMStringEncoding are not yet implemented!
-    if (!data || (!data->bytes && data->length > 0)) return nil;
-
-    MMString *string = MMString_init(data->length);
+    MMString *string = MMString_init(len);
     if (!string) return nil;
-    if (data->length > 0) {
-        memcpy(string->cString, data->bytes, data->length);
+    if (len > 0) {
+        memcpy(string->cString, bytes, len);
     }
     return string;
+}
+
+MMString *MMString_initWithData(MMData * data, MMStringEncoding encoding){
+    if (!data || (!data->bytes && data->length > 0)) return nil;
+
+    return MMString_initWithBytes(data->bytes, data->length, encoding);
 } 
 
 MMData *MMString_dataUsingEncoding(const MMString *recv, MMStringEncoding encoding){
@@ -276,7 +280,9 @@ MMRange MMString_rangeOfCString(const MMString *recv, const char * str){
     const unsigned char *needle = (const unsigned char *)str;
     size_t needleLen = strlen(str);
 
-    for (size_t i = 0; i <= haystackLen; i++) {
+    if (needleLen > haystackLen) return notFound;
+
+    for (size_t i = 0; i <= haystackLen - needleLen; i++) {
         if (memcmp(haystack + i, needle, needleLen) == 0) {
             return (MMRange){ i, needleLen };
         }
@@ -515,6 +521,107 @@ MMUInteger MMString_lengthOfBytesUsingEncoding(const MMString *recv, MMStringEnc
     return recv->length;
 }
 
+
+static unsigned char MMString_foldASCII(unsigned char character) {
+    if (character >= 'A' && character <= 'Z') {
+        return (unsigned char)(character + ('a' - 'A'));
+    }
+    return character;
+}
+
+static MMComparisonResult MMString_compareBytes(const MMString *string,
+                                                const MMString *otherString,
+                                                MMBool caseInsensitive,
+                                                MMBool numeric) {
+    size_t leftIndex = 0;
+    size_t rightIndex = 0;
+
+    while (leftIndex < string->length && rightIndex < otherString->length) {
+        unsigned char left = (unsigned char)string->cString[leftIndex];
+        unsigned char right = (unsigned char)otherString->cString[rightIndex];
+
+        if (numeric && left >= '0' && left <= '9' &&
+            right >= '0' && right <= '9') {
+            size_t leftEnd = leftIndex;
+            size_t rightEnd = rightIndex;
+            size_t leftSignificant;
+            size_t rightSignificant;
+
+            while (leftEnd < string->length &&
+                   string->cString[leftEnd] >= '0' && string->cString[leftEnd] <= '9') {
+                leftEnd++;
+            }
+            while (rightEnd < otherString->length &&
+                   otherString->cString[rightEnd] >= '0' && otherString->cString[rightEnd] <= '9') {
+                rightEnd++;
+            }
+
+            leftSignificant = leftIndex;
+            while (leftSignificant < leftEnd && string->cString[leftSignificant] == '0') {
+                leftSignificant++;
+            }
+            rightSignificant = rightIndex;
+            while (rightSignificant < rightEnd && otherString->cString[rightSignificant] == '0') {
+                rightSignificant++;
+            }
+
+            if (leftEnd - leftSignificant < rightEnd - rightSignificant) {
+                return MMOrderedAscending;
+            }
+            if (leftEnd - leftSignificant > rightEnd - rightSignificant) {
+                return MMOrderedDescending;
+            }
+
+            for (size_t digit = 0; digit < leftEnd - leftSignificant; digit++) {
+                unsigned char leftDigit = (unsigned char)string->cString[leftSignificant + digit];
+                unsigned char rightDigit = (unsigned char)otherString->cString[rightSignificant + digit];
+                if (leftDigit < rightDigit) return MMOrderedAscending;
+                if (leftDigit > rightDigit) return MMOrderedDescending;
+            }
+
+            leftIndex = leftEnd;
+            rightIndex = rightEnd;
+            continue;
+        }
+
+        if (caseInsensitive) {
+            left = MMString_foldASCII(left);
+            right = MMString_foldASCII(right);
+        }
+        if (left < right) return MMOrderedAscending;
+        if (left > right) return MMOrderedDescending;
+        leftIndex++;
+        rightIndex++;
+    }
+
+    if (leftIndex < string->length) return MMOrderedDescending;
+    if (rightIndex < otherString->length) return MMOrderedAscending;
+    return MMOrderedSame;
+}
+
+MMComparisonResult MMString_compare(const MMString *recv,
+                                   const MMString *otherString,
+                                   MMStringCompareOptions options) {
+    MMComparisonResult result;
+    MMBool caseInsensitive;
+    MMBool numeric;
+
+    if (recv == otherString) return MMOrderedSame;
+    if ((!recv || !recv->cString) && (!otherString || !otherString->cString)) {
+        return MMOrderedSame;
+    }
+    if (!recv || !recv->cString) return MMOrderedAscending;
+    if (!otherString || !otherString->cString) return MMOrderedDescending;
+
+    caseInsensitive = (options & MMCaseInsensitiveSearch) != 0;
+    numeric = (options & MMNumericSearch) != 0;
+    result = MMString_compareBytes(recv, otherString, caseInsensitive, numeric);
+
+    if (result == MMOrderedSame && (options & MMForcedOrderingSearch)) {
+        result = MMString_compareBytes(recv, otherString, NO, NO);
+    }
+    return result;
+}
 
 MMString *MMString_copy(MMString * recv){
     if (!recv) return nil;

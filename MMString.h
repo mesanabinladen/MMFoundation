@@ -10,6 +10,7 @@
 MMString *MMString_initWithCString(const char *cString);
 MMString *MMString_initWithUTF8String(const char *nullTerminatedCString);
 MMString *MMString_initWithFormat(const char *format, ...);
+MMString *MMString_initWithBytes(const void * bytes, MMUInteger len, MMStringEncoding encoding);
 MMString *MMString_initWithData(MMData *data, MMStringEncoding encoding);
 MMData *MMString_dataUsingEncoding(const MMString *recv, MMStringEncoding encoding);
 const char *MMString_cStringUsingEncoding(const MMString *recv, MMStringEncoding enc);
@@ -41,6 +42,9 @@ long MMString_longValue(const MMString *recv);
 long long MMString_longLongValue(const MMString *recv);
 double MMString_doubleValue(const MMString *recv);
 MMUInteger MMString_lengthOfBytesUsingEncoding(const MMString *recv, MMStringEncoding enc);
+/* Bytewise ordering; supports ASCII case-insensitive, numeric, and forced ordering.
+   Unicode folding and search-only options are not supported. */
+MMComparisonResult MMString_compare(const MMString *recv, const MMString *otherString, MMStringCompareOptions options);
 
 typedef MMString MMMutableString ;
 
