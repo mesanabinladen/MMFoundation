@@ -102,6 +102,7 @@ ssize_t MMFileHandle_writeData(MMFileHandle *recv, const MMData *data) {
 
 void MMFileHandle_truncateFileAtOffset(MMFileHandle *recv, off_t offset){     
     if (!recv) return;
+    lseek(recv->fd, offset, SEEK_SET);
     ftruncate(recv->fd, offset);
 }   
 
