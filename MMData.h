@@ -28,7 +28,6 @@ MMData *MMData_dataUsingEncoding(const MMString * str, MMStringEncoding enc);
 MMRange MMData_rangeOfData(const MMData *recv, MMData *dataToFind, MMDataSearchOptions mask, MMRange searchRange);
 MMData *MMData_subdataWithRange(const MMData *recv, MMRange range);
 MMBool MMData_writeToFile(const MMData *recv, const MMString * path, MMBool useAuxiliaryFile);
-MMData *MMData_copy(MMData * recv);
 
 typedef struct MMMutableData {
     int type;
@@ -51,6 +50,5 @@ MMData *MMMutableData_subdataWithRange(const MMMutableData *recv, MMRange range)
 void MMMutableData_appendBytes(MMMutableData * recv, const void * bytes, MMUInteger length);
 void MMMutableData_appendData(MMMutableData * recv, MMData * other);
 MMBool MMMutableData_writeToFile(const MMMutableData *recv, const MMString *path, MMBool useAuxiliaryFile);
-MMMutableData *MMMutableData_copy(MMMutableData * recv);
 
 #endif /*MMDATA_H*/

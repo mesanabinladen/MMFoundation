@@ -11,6 +11,5 @@ typedef struct MMProcessInfo {
 } MMProcessInfo;
 
 MMProcessInfo *MMProcessInfo_init(void);
-MMProcessInfo *MMProcessInfo_copy(const MMProcessInfo *recv);
 
 #endif /* MMPROCESSINFO_H */

@@ -2,7 +2,7 @@
 
 #include "MMFoundation.h"
 
-#include "MMReleases.h"
+#include "MMMemoryHelpers.h"
 
 //thread local autoreleasepool
 static _Thread_local MMMutableArray *pools = NULL;
@@ -38,6 +38,12 @@ void * MM_init(int type){
         case (MMTypeMutableArray):
             voidPtr = malloc(sizeof(MMMutableArray));
             break;
+        case (MMTypeDictionary):
+            voidPtr = malloc(sizeof(MMDictionary));
+            break;
+        case (MMTypeMutableDictionary):
+            voidPtr = malloc(sizeof(MMMutableDictionary));
+            break;
         case (MMTypeData):
             voidPtr = malloc(sizeof(MMData));
             break;
@@ -61,6 +67,9 @@ void * MM_init(int type){
             break;
         case (MMTypeNumber):
             voidPtr = malloc(sizeof(MMNumber));
+            break;
+        case (MMTypeValue):
+            voidPtr = malloc(sizeof(MMValue));
             break;
         case (MMTypeLock):
             voidPtr = malloc(sizeof(MMLock));
@@ -120,6 +129,12 @@ void * MM_copy(void * anObject){
         case (MMTypeMutableArray):
             newPtr = MMMutableArray_copy((MMMutableArray *) ptr);
             break;
+        case (MMTypeDictionary):
+            newPtr = MMDictionary_copy((MMDictionary *) ptr);
+            break;
+        case (MMTypeMutableDictionary):
+            newPtr = MMMutableDictionary_copy((MMMutableDictionary *) ptr);
+            break;
         case (MMTypeData):
             newPtr = MMData_copy((MMData *) ptr);
             break;
@@ -146,6 +161,9 @@ void * MM_copy(void * anObject){
         case (MMTypeNumber):
             objSize = sizeof(MMNumber);
             //no subclassing of _copy!
+            break;
+        case (MMTypeValue):
+            newPtr = MMValue_copy((MMValue *)ptr);
             break;
         case (MMTypeLock):
             objSize = sizeof(MMLock);
@@ -199,6 +217,12 @@ void MM_release(void* anObject){
             case (MMTypeMutableArray):
                 MMMutableArray_release((MMMutableArray *)ptr);
                 break;
+            case (MMTypeDictionary):
+                MMDictionary_release((MMDictionary *)ptr);
+                break;
+            case (MMTypeMutableDictionary):
+                MMMutableDictionary_release((MMMutableDictionary *)ptr);
+                break;
             case (MMTypeData):
                 MMData_release((MMData *)ptr);
                 break;
@@ -223,6 +247,9 @@ void MM_release(void* anObject){
             case (MMTypeNumber):
                 MMNumber_release((MMNumber *)ptr);  
                 break; 
+            case (MMTypeValue):
+                MMValue_release((MMValue *)ptr);
+                break;
             case (MMTypeLock):
                 MMLock_release((MMLock *)ptr);
                 break;
@@ -250,4 +277,3 @@ void MM_release(void* anObject){
         }
     }
 }
-

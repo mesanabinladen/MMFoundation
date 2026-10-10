@@ -10,8 +10,8 @@ MMError *MMError_init(){
 MMError *MMError_copy(MMError *recv){
     MMError * new = MMError_init();
     new->code=recv->code;
-    new->domain=MMString_copy(recv->domain);
-    new->localizedDescription=MMString_copy(recv->localizedDescription);
+    new->domain=MM_copy(recv->domain);
+    new->localizedDescription=MM_copy(recv->localizedDescription);
     return new;
 }
 

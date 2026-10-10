@@ -13,6 +13,5 @@ typedef struct MMURL {
 MMURL *MMURL_init();
 MMURL *MMURL_initWithString(MMString * URLString);
 MMURL *MMURL_initWithCString(char * URLString);
-MMURL *MMURL_copy(MMURL *recv);
 
 #endif /*MMURL_H*/

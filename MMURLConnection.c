@@ -231,7 +231,7 @@ static MMData *send_with_libcurl(MMURLRequest *request, MMHTTPURLResponse **resp
         *response = MMHTTPURLResponse_init();
         if (*response) {
             (*response)->statusCode = http_code;
-            (*response)->url = MMURL_copy(request->URL);
+            (*response)->url = MM_copy(request->URL);
         }
     }
 

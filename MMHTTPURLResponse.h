@@ -14,6 +14,5 @@ typedef struct MMHTTPURLResponse {
 
 
 MMHTTPURLResponse *MMHTTPURLResponse_init();
-MMHTTPURLResponse *MMTTPURLResponse_copy(MMHTTPURLResponse *recv);
 
 #endif /*MMHTTPURLRESPONSE_H*/

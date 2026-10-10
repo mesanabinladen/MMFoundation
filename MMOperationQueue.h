@@ -2,7 +2,7 @@
 #ifndef MMOPERATIONQUEUE_H
 #define MMOPERATIONQUEUE_H
 
-#include "MMinvocationOperation.h"
+#include "MMInvocationOperation.h"
 #include "MMArray.h"
 
 #if defined(_WIN32) || defined(_WIN64)
@@ -31,6 +31,5 @@ MMOperationQueue *MMOperationQueue_init();
 void MMOperationQueue_addOperation(MMOperationQueue * recv,  MMInvocationOperation *op);
 void MMOperationQueue_waitUntilAllOperationsAreFinished(MMOperationQueue *recv);
 
-MMOperationQueue *MMOperationQueue_copy(MMOperationQueue * recv);
 
 #endif 

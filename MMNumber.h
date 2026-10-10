@@ -2,6 +2,7 @@
 #define MMNUMBER_h
 
 #include "MMTypes.h"
+#include "MMString.h"
 
 typedef struct MMNumber {
     int type;
@@ -38,5 +39,6 @@ MMNumber * MMNumber_numberWithUnsignedLong(unsigned long value);
 MMNumber * MMNumber_numberWithUnsignedLongLong(unsigned long long value);
 MMNumber * MMNumber_numberWithFloat(float value);
 MMNumber * MMNumber_numberWithDouble(double value);
+MMString * MMNumber_stringValue(MMNumber *recv);
 
 #endif /*MMNUMBER_h*/

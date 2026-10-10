@@ -12,7 +12,7 @@ MMURL *MMURL_initWithString(MMString * URLString){
 
     MMURL *newUrl = MMURL_init();
     if (!newUrl) return nil;
-    newUrl->url = MMString_copy(URLString);
+    newUrl->url = MM_copy(URLString);
     return newUrl;
 }
 

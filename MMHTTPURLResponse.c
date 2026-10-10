@@ -9,7 +9,7 @@ MMHTTPURLResponse *MMHTTPURLResponse_init(){
 MMHTTPURLResponse *MMTTPURLResponse_copy(MMHTTPURLResponse *recv){
     MMHTTPURLResponse *n=MMHTTPURLResponse_init();
     n->statusCode=recv->statusCode;
-    n->url=MMURL_copy(recv->url);
+    n->url=MM_copy(recv->url);
     return n;
 }
 

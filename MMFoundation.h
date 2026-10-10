@@ -9,13 +9,15 @@
 #include "MMProcessInfo.h"
 #include "MMFileManager.h"
 #include "MMArray.h"
+#include "MMDictionary.h"
 #include "MMNumber.h"
+#include "MMValue.h"
 #include "MMRange.h"
 #include "MMLock.h"
 #include "MMURLRequest.h"
 #include "MMURL.h"
 #include "MMURLConnection.h"
 #include "MMOperationQueue.h"
-#include "MMinvocationOperation.h"
+#include "MMInvocationOperation.h"
 
 #endif /* MMFOUNDATION_H */

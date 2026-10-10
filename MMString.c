@@ -71,6 +71,15 @@ MMString *MMString_initWithData(MMData * data, MMStringEncoding encoding){
     return string;
 } 
 
+MMData *MMString_dataUsingEncoding(const MMString *recv, MMStringEncoding encoding){
+    (void)encoding;
+    //MMStringEncoding are not yet implemented!
+    if (!recv || !recv->cString) return nil;
+
+    MMData *data = MMData_initWithBytes(recv->cString, recv->length);
+    return data;
+}
+
 MMString *MMString_stringByDeletingLastPathComponent(const MMString *recv){
     if (!recv || !recv->cString) return nil;
 
@@ -410,6 +419,24 @@ MMString * MMString_substringToIndex(const MMString * recv, MMUInteger to){
         memcpy(newStr->cString, recv->cString, to);
     }
     
+    return newStr;
+}
+
+MMString *MMString_substringWithRange(const MMString *recv, MMRange range){
+    if (recv == nil || recv->cString == nil) return nil;
+
+    if (range.location > recv->length) return nil;
+    if (range.location + range.length > recv->length) {
+        range.length = recv->length - range.location;
+    }
+
+    MMString *newStr = MMString_init(range.length);
+    if (!newStr) return nil;
+
+    if (range.length > 0) {
+        memcpy(newStr->cString, &recv->cString[range.location], range.length);
+    }
+
     return newStr;
 }
 

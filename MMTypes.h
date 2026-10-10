@@ -42,6 +42,8 @@ typedef enum {
     MMTypeFreed,
     MMTypeArray,
     MMTypeMutableArray,
+    MMTypeDictionary,
+    MMTypeMutableDictionary,
     MMTypeData,
     MMTypeMutableData,
     MMTypeDate,
@@ -56,7 +58,8 @@ typedef enum {
     MMTypeError,
     MMTypeOperationQueue,
     MMTypeInvocationOperation,
-    MMTypeProcessInfo
+    MMTypeProcessInfo,
+    MMTypeValue
 } ObjectTypes;
 
 typedef struct  {

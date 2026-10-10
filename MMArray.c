@@ -108,7 +108,7 @@ MMArray *MMArray_initWithArray(MMArray * array, MMBool flag){
         }
     }
     else{
-        memcpy(&newArr->items, &array->items, newArr->count);
+        memcpy(&newArr->items, &array->items, newArr->count*sizeof(void *));
         for (size_t i=0; i<newArr->count; i++){
             MM_retain(newArr->items[i]); //each object in array simply receives a retain message when it is added to the returned array.
         }

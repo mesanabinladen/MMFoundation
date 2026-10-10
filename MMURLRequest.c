@@ -8,7 +8,7 @@ MMURLRequest * MMURLRequest_init(){
 
 MMURLRequest * MMURLRequest_requestWithURL(MMURL * URL){
     MMURLRequest *new=MMURLRequest_init();
-    new->URL = MMURL_copy(URL);
+    new->URL = MM_copy(URL);
     return new;
 }
 

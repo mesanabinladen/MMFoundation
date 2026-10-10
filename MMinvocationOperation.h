@@ -13,7 +13,7 @@ typedef struct {
     int isFinished;
 } MMInvocationOperation;
 
-MMInvocationOperation * MMinvocationOperation_init();
-MMInvocationOperation * MMinvocationOperation_initWithTarget(SEL sel, void * arg);
+MMInvocationOperation * MMInvocationOperation_init();
+MMInvocationOperation * MMInvocationOperation_initWithTarget(SEL sel, void * arg);
 
 #endif

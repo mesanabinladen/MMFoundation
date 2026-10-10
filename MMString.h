@@ -11,6 +11,7 @@ MMString *MMString_initWithCString(const char *cString);
 MMString *MMString_initWithUTF8String(const char *nullTerminatedCString);
 MMString *MMString_initWithFormat(const char *format, ...);
 MMString *MMString_initWithData(MMData *data, MMStringEncoding encoding);
+MMData *MMString_dataUsingEncoding(const MMString *recv, MMStringEncoding encoding);
 const char *MMString_cStringUsingEncoding(const MMString *recv, MMStringEncoding enc);
 MMString *MMString_stringByDeletingLastPathComponent(const MMString *recv);
 MMString *MMString_stringByAppendingString(const MMString *recv, const MMString *append);
@@ -34,12 +35,12 @@ const char *MMString_fileSystemRepresentation(const MMString *recv);
 MMBool MMString_hasSuffix(const MMString *recv, MMString *str);
 MMString *MMString_substringFromIndex(const MMString *recv, MMUInteger from);
 MMString *MMString_substringToIndex(const MMString *recv, MMUInteger to);
+MMString *MMString_substringWithRange(const MMString *recv, MMRange range);
 int MMString_intValue(const MMString *recv);
 long MMString_longValue(const MMString *recv);
 long long MMString_longLongValue(const MMString *recv);
 double MMString_doubleValue(const MMString *recv);
 MMUInteger MMString_lengthOfBytesUsingEncoding(const MMString *recv, MMStringEncoding enc);
-MMString *MMString_copy(MMString *recv);
 
 typedef MMString MMMutableString ;
 
@@ -47,6 +48,5 @@ MMMutableString *MMMutableString_initWithCString(const char *str);
 MMMutableString *MMMutableString_initWithData(MMData *data, MMStringEncoding encoding);
 void MMMutableString_appendString(MMMutableString *recv, MMString * aString);
 MMUInteger MMMutableString_lengthOfBytesUsingEncoding(const MMString *recv, MMStringEncoding enc);
-MMMutableString *MMMutableString_copy(MMMutableString * recv);
 
 #endif /*MMSTRING_H*/

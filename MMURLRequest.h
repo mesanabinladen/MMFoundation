@@ -14,6 +14,5 @@ typedef struct MMURLRequest {
 
 MMURLRequest *MMURLRequest_init();
 MMURLRequest *MMURLRequest_requestWithURL(MMURL * URL);
-MMURLRequest *MMURLRequest_copy(MMURLRequest *recv);
 
 #endif /*MMURLREQUEST_H*/

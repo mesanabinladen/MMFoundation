@@ -130,7 +130,7 @@ void MMOperationQueue_waitUntilAllOperationsAreFinished(MMOperationQueue *recv)
 
 MMOperationQueue *MMOperationQueue_copy(MMOperationQueue * recv){
     MMOperationQueue * n = MM_init(MMTypeOperationQueue);
-    n->operations = MMMutableArray_copy(recv->operations);
+    n->operations = MM_copy(recv->operations);
     return n;
 }
 

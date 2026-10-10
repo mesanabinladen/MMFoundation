@@ -79,6 +79,13 @@ MMNumber * MMNumber_numberWithDouble(double value){
     return n;
 }
 
+MMString * MMNumber_stringValue(MMNumber *recv){
+    if (recv == nil) return nil;
+
+    MMString *str = MMString_initWithFormat("%f", recv->doubleValue);
+    return str;
+}
+
 void MMNumber_release(MMNumber * recv){
     if (!recv) return;
     free(recv);
