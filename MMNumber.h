@@ -21,9 +21,9 @@ typedef struct MMNumber {
         unsigned int unsignedIntValue;
         unsigned long unsignedLongValue;
         unsigned long long unsignedLongLongValue;
-        float floatValue;
-        double doubleValue;
     };
+    float floatValue;
+    double doubleValue;
 } MMNumber;
 
 MMNumber * MMNumber_numberWithBool(MMBool value);

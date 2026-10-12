@@ -21,6 +21,7 @@ typedef enum {
 MMData *MMData_initWithCapacity(size_t size);
 MMData *MMData_initWithBytes(const void *bytes, size_t length);
 MMData *MMData_initWithContentsOfFile(const MMString *path);
+MMData *MMData_initWithContentsOfFile2(const MMString * path, MMDataReadingOptions readOptionsMask, MMError ** errorPtr);
 MMData *MMData_dataWithContentsOfMappedFile(const MMString *path);
 void MMData_getBytes(const MMData* recv, void * buffer , MMUInteger length);
 void MMData_getBytesFromRange(const MMData *recv, void * buffer , MMRange range);

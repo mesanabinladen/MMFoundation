@@ -1,5 +1,6 @@
 #include "MMData.h"
 #include "MMTypes.h"
+#include "MMString.h"
 
 #if defined(_WIN32) || defined(_WIN64)
 #include <windows.h>
@@ -9,6 +10,7 @@
 
 MMData *MMData_initWithCapacity(size_t length){
     MMData *data = MM_init(MMTypeData);
+    if (!data) return NULL;
 
     data->bytes = malloc(length ? length : 1);
     if (!data->bytes) {
@@ -32,17 +34,100 @@ MMData *MMData_initWithBytes(const void *bytes, size_t length){
 
 }
 MMData *MMData_initWithContentsOfFile(const MMString *path){
+    return MMData_initWithContentsOfFile2(path, MMDataReadingUncached, NULL);
+}
+
+static void set_data_error(MMError **errorPtr, int code, const char *description){
+    if (!errorPtr) return;
+
+    MMError *error = MMError_init();
+    if (!error) return;
+    error->code = (MMUInteger)code;
+    error->domain = MMString_initWithCString("MMDataErrorDomain");
+    error->localizedDescription = MMString_initWithCString(description);
+    *errorPtr = error;
+}
+
+MMData *MMData_initWithContentsOfFile2(const MMString *path, MMDataReadingOptions readOptionsMask, MMError **errorPtr){
+    const int validOptions = MMDataReadingMappedIfSafe | MMDataReadingUncached | MMDataReadingMappedAlways;
+    if (!path || !path->cString ||
+        ((int)readOptionsMask & ~validOptions) != 0){
+        errno = EINVAL;
+        set_data_error(errorPtr, errno, "Invalid file path or reading options");
+        return NULL;
+    }
+
+    if ((readOptionsMask & MMDataReadingMappedAlways) ||
+        ((readOptionsMask & MMDataReadingMappedIfSafe) && !(readOptionsMask & MMDataReadingUncached))){
+        MMData *mappedData = MMData_dataWithContentsOfMappedFile(path);
+        if (mappedData) return mappedData;
+        if (readOptionsMask & MMDataReadingMappedAlways){
+            int errorCode = errno ? errno : EIO;
+            set_data_error(errorPtr, errorCode, strerror(errorCode));
+            return NULL;
+        }
+    }
+
     FILE *file = fopen(path->cString, "rb");
-    if (!file) return NULL;
+    if (!file){
+        int errorCode = errno;
+        set_data_error(errorPtr, errorCode, strerror(errorCode));
+        return NULL;
+    }
 
-    fseek(file, 0, SEEK_END);
-    size_t length = ftell(file);
-    rewind(file);
+#if defined(F_NOCACHE)
+    if (readOptionsMask & MMDataReadingUncached) fcntl(fileno(file), F_NOCACHE, 1);
+#endif
 
+    if (fseek(file, 0, SEEK_END) != 0){
+        int errorCode = errno ? errno : EIO;
+        fclose(file);
+        set_data_error(errorPtr, errorCode, strerror(errorCode));
+        return NULL;
+    }
+
+    long fileSize = ftell(file);
+    if (fileSize < 0 || (uintmax_t)fileSize > SIZE_MAX){
+        int errorCode = fileSize < 0 ? (errno ? errno : EIO) : EFBIG;
+        fclose(file);
+        set_data_error(errorPtr, errorCode, strerror(errorCode));
+        return NULL;
+    }
+
+    if (fseek(file, 0, SEEK_SET) != 0){
+        int errorCode = errno ? errno : EIO;
+        fclose(file);
+        set_data_error(errorPtr, errorCode, strerror(errorCode));
+        return NULL;
+    }
+
+    size_t length = (size_t)fileSize;
     MMData *data = MMData_initWithCapacity(length);
-    fread(data->bytes, 1, length, file);
-    fclose(file);
+    if (!data){
+        fclose(file);
+        set_data_error(errorPtr, ENOMEM, strerror(ENOMEM));
+        return NULL;
+    }
 
+    size_t bytesRead = 0;
+    while (bytesRead < length){
+        errno = 0;
+        size_t count = fread((unsigned char *)data->bytes + bytesRead, 1, length - bytesRead, file);
+        bytesRead += count;
+        if (bytesRead == length) break;
+        if (ferror(file) && errno == EINTR){
+            clearerr(file);
+            continue;
+        }
+
+        int errorCode = ferror(file) && errno ? errno : EIO;
+        MM_release(data);
+        fclose(file);
+        set_data_error(errorPtr, errorCode, strerror(errorCode));
+        return NULL;
+    }
+
+    fclose(file);
     return data;
 }
 
@@ -65,13 +150,13 @@ MMData *MMData_dataWithContentsOfMappedFile(const MMString *path){
     length = (size_t)fileSize.QuadPart;
 
     if (length > 0){
-        HANDLE mapping = CreateFileMappingA(file, NULL, PAGE_READONLY, 0, 0, NULL);
+        HANDLE mapping = CreateFileMappingA(file, NULL, PAGE_WRITECOPY, 0, 0, NULL);
         if (!mapping){
             CloseHandle(file);
             return NULL;
         }
 
-        bytes = MapViewOfFile(mapping, FILE_MAP_READ, 0, 0, 0);
+        bytes = MapViewOfFile(mapping, FILE_MAP_COPY, 0, 0, 0);
         CloseHandle(mapping);
         if (!bytes){
             CloseHandle(file);
@@ -92,7 +177,7 @@ MMData *MMData_dataWithContentsOfMappedFile(const MMString *path){
     length = (size_t)fileInfo.st_size;
 
     if (length > 0){
-        bytes = mmap(NULL, length, PROT_READ, MAP_PRIVATE, fd, 0);
+        bytes = mmap(NULL, length, PROT_READ | PROT_WRITE, MAP_PRIVATE, fd, 0);
         close(fd);
         if (bytes == MAP_FAILED) return NULL;
         isMemoryMapped = YES;
@@ -103,6 +188,17 @@ MMData *MMData_dataWithContentsOfMappedFile(const MMString *path){
 #endif
 
     MMData *data = MM_init(MMTypeData);
+    if (!data){
+        if (isMemoryMapped){
+#if defined(_WIN32) || defined(_WIN64)
+            UnmapViewOfFile(bytes);
+#else
+            munmap(bytes, length);
+#endif
+        }
+        errno = ENOMEM;
+        return NULL;
+    }
     data->bytes = bytes;
     data->length = length;
     data->isMemoryMapped = isMemoryMapped;

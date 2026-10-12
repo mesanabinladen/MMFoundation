@@ -131,4 +131,10 @@ enum {
     MMRegularExpressionSearch    = 1 << 8 //The search string is treated as an ICU-compatible regular expression. If set, no other options can apply except NSCaseInsensitiveSearch and NSAnchoredSearch. You can use this option only with the rangeOfString:… methods and stringByReplacingOccurrencesOfString:withString:options:range:.
 };
 
+typedef enum {
+    MMDataReadingMappedIfSafe = 1 << 0, //Map the file when safe; otherwise read it into memory.
+    MMDataReadingUncached = 1 << 1, //Avoid caching the file contents when the platform supports it.
+    MMDataReadingMappedAlways = 1 << 3 //Require the file to be memory-mapped.
+} MMDataReadingOptions;
+
 #endif /*MMTYPES_H*/
