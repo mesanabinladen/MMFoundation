@@ -239,7 +239,13 @@ void MMMutableArray_removeObjectAtIndex(MMMutableArray * recv, MMUInteger index)
         recv->items[n-1]=recv->items[n];
     }
     size_t newCount = recv->count - 1;
-    recv->items = realloc(recv->items, newCount * sizeof(void*));
+    if (newCount == 0) {
+        recv->items=nil;
+    }
+    else{
+        recv->items = realloc(recv->items, newCount * sizeof(void*));
+    }
+    
     recv->count = newCount;
 }
 
