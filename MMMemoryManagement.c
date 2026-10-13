@@ -193,7 +193,8 @@ void * MM_copy(void * anObject){
             exit(1);
     }
     if (newPtr==nil){ //for simple objects with no subclassing of MM_copy...
-        newPtr = malloc(sizeof(objSize));
+        newPtr = malloc(objSize);
+        if (!newPtr) return nil;
         memcpy(newPtr, ptr, objSize);
         ((ObjectType *)newPtr)->retainCount = 1;
     }
